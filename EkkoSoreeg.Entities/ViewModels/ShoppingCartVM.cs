@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace myshop.Entities.ViewModels
+namespace EkkoSoreeg.Entities.ViewModels
 {
     public class ShoppingCartVM
     {
