@@ -1,4 +1,4 @@
-namespace EkkoSoreeg.Models
+namespace EkkoSoreeg.Entities.Models
 {
     public class ErrorViewModel
     {
