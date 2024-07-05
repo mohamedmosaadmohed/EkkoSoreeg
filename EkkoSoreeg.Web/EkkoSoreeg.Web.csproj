@@ -23,4 +23,8 @@
     <ProjectReference Include="..\EkkoSoreeg.Utilities\EkkoSoreeg.Utilities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Dashboard\Images\Products\" />
+  </ItemGroup>
+
 </Project>

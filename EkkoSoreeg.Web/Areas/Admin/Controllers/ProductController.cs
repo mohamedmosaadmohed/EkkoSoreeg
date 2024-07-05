@@ -53,13 +53,13 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 if (file != null)
                 {
                     string filename = Guid.NewGuid().ToString();
-                    var Upload = Path.Combine(rootPath, @"dist\img\Products");
-                    var extention = Path.GetExtension(file.FileName);
+                    var Upload = Path.Combine(rootPath, @"Dashboard\Images\Products");
+                    var extention = Path.GetExtension(file.FileName); // .JPG
                     using (var fileStream = new FileStream(Path.Combine(Upload, filename + extention), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
                     }
-                    Productvm.Product.Image = @"dist\img\Products\" + filename + extention;
+                    Productvm.Product.Image = @"Dashboard\Images\Products\" + filename + extention;
                 }
                 _unitOfWork.Product.Add(Productvm.Product);
                 _unitOfWork.Complete();
@@ -70,14 +70,14 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
 
         }
         [HttpGet]
-        public IActionResult Update(int? Id)
+        public IActionResult Update(int? id)
         {
-            if (Id == null | Id == 0)
+            if (id == null | id == 0)
                 NotFound();
 
             ProductVM productVM = new ProductVM()
             {
-                Product = _unitOfWork.Product.GetFirstorDefault(x => x.Id == Id),
+                Product = _unitOfWork.Product.GetFirstorDefault(x => x.Id == id),
                 CatagoryList = _unitOfWork.Catagory.GetAll().Select(X => new SelectListItem
                 {
                     Text = X.Name,
@@ -96,7 +96,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 if (file != null)
                 {
                     string filename = Guid.NewGuid().ToString();
-                    var Upload = Path.Combine(rootPath, @"dist\img\Products");
+                    var Upload = Path.Combine(rootPath, @"Dashboard\Images\Products");
                     var extention = Path.GetExtension(file.FileName);
                     if (Productvm.Product.Image != null)
                     {
@@ -110,7 +110,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-                    Productvm.Product.Image = @"dist\img\Products\" + filename + extention;
+                    Productvm.Product.Image = @"Dashboard\Images\Products" + filename + extention;
                 }
                 _unitOfWork.Product.Update(Productvm.Product);
                 _unitOfWork.Complete();
