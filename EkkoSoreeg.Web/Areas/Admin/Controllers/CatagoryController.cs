@@ -64,7 +64,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         //    var item = _unitOfWork.Catagory.GetFirstorDefault(x => x.Id == Id);
         //    return View(item);
         //}
-        [HttpGet]
+        [HttpDelete]
         public IActionResult Delete(int? Id)
         {
             var item = _unitOfWork.Catagory.GetFirstorDefault(x => x.Id == Id);
@@ -73,8 +73,8 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
 
             _unitOfWork.Catagory.Remove(item);
             _unitOfWork.Complete();
-            TempData["Delete"] = "Category has been deleted successfully.";
-            return RedirectToAction("Index");
+            // TempData["Delete"] = "Category has been deleted successfully.";
+            return Json(new { success = true, message = "Product Has been Deleted Successfully" }); // (Sweetalert)
         }
 
     }
