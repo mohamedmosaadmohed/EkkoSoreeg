@@ -57,13 +57,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             }
             return View(catagory);
         }
-        //public IActionResult Delete(int? Id)
-        //{
-        //    if (Id == null || Id == 0)
-        //        NotFound();
-        //    var item = _unitOfWork.Catagory.GetFirstorDefault(x => x.Id == Id);
-        //    return View(item);
-        //}
         [HttpDelete]
         public IActionResult Delete(int? Id)
         {
