@@ -110,7 +110,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-                    Productvm.Product.Image = @"Dashboard\Images\Products" + filename + extention;
+                    Productvm.Product.Image = @"Dashboard\Images\Products\" + filename + extention;
                 }
                 _unitOfWork.Product.Update(Productvm.Product);
                 _unitOfWork.Complete();
