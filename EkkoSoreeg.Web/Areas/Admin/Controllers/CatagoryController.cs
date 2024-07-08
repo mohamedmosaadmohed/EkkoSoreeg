@@ -1,10 +1,13 @@
 ﻿using EkkoSoreeg.Entities.Models;
 using EkkoSoreeg.Entities.Repositories;
+using EkkoSoreeg.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EkkoSoreeg.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.AdminRole)]
     public class CatagoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

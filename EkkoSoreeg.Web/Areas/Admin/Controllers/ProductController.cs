@@ -3,10 +3,13 @@ using EkkoSoreeg.Entities.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using EkkoSoreeg.Entities.ViewModels;
+using EkkoSoreeg.Utilities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EkkoSoreeg.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.AdminRole)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
