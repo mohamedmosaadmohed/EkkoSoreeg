@@ -4,7 +4,13 @@
     ViewData["Title"] = "Access denied";
 }
 
-<header>
+<style>
+    .error {
+        text-align: center;
+        margin: 120px 30px;
+    }
+</style>
+<div class="error">
     <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource.</p>
-</header>
+    <p class="text-danger">You do not have access to this resource,please Call Admin to add you Permission</p>
+</div>
