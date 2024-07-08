@@ -19,7 +19,7 @@
             margin: auto;
         }
 
-        form {
+    .formgh {
             background: #fff;
             padding: 30px;
             border-radius: 10px;
@@ -51,9 +51,11 @@
             border-color: #666666;
         }
 
-        .form-radio-group {
-            margin-bottom: 15px;
-        }
+    .form-radio-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
 
         .form-radio-group input[type="radio"] {
             margin-right: 10px;
@@ -61,13 +63,15 @@
 
         .form-radio-group label {
             margin-right: 20px;
+            margin-bottom: 0 !important;
         }
+
     </style>
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row justify-content-center">
             <div class="col-md-5">
-                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <form class="formgh" id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                     <h2>Create a new account</h2>
                     <hr />
                     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
@@ -106,12 +110,12 @@
                     else
                     {
                         <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                        <div class="mt-3">
+                            <p>
+                                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">You Already Have Account?</a>
+                            </p>
+                        </div>
                     }
-                    <div class="mt-3">
-                        <p>
-                            <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">You Already Have Account?</a>
-                        </p>
-                    </div>
                 </form>
             </div>
             <div class="col-md-6 d-none d-md-flex align-items-center">
@@ -122,6 +126,7 @@
         </div>
     </div>
 </section>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
