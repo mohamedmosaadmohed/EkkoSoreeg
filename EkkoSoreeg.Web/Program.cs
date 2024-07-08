@@ -1,32 +1,37 @@
-using EkkoSoreeg.DataAccess.Data;
-using EkkoSoreeg.DataAccess.Implementation;
-using EkkoSoreeg.Entities.Repositories;
-using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using EkkoSoreeg.DataAccess.Data;
+using EkkoSoreeg.Entities.Models;
+using EkkoSoreeg.Utilities;
+using EkkoSoreeg.DataAccess.Implementation;
+using EkkoSoreeg.Entities.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 
-builder.Services.AddControllersWithViews();
-
-// Register DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register Identity services
-builder.Services.AddIdentity<IdentityUser,IdentityRole>
-    (option => option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(4))
-    .AddDefaultTokenProviders().AddDefaultUI().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(4);
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders()
+.AddDefaultUI();
+
 
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
-// Register UnitOfWork
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
 
 if (!app.Environment.IsDevelopment())
 {
