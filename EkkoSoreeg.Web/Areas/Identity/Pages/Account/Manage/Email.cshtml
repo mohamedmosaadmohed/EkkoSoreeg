@@ -13,6 +13,7 @@
             <div class="col-md-9">
                 <form class="formgh" id="email-form" method="post">
                     <h3 class="mb-3">@ViewData["Title"]</h3>
+                    <hr />
                     <div asp-validation-summary="All" class="text-danger" role="alert"></div>
                     @if (Model.IsEmailConfirmed)
                     {
