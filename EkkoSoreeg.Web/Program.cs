@@ -16,7 +16,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register Identity services
-builder.Services.AddIdentity<IdentityUser, IdentityRole>
+builder.Services.AddIdentity<IdentityUser,IdentityRole>
     (option => option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(4))
     .AddDefaultTokenProviders().AddDefaultUI().AddEntityFrameworkStores<ApplicationDbContext>();
 
