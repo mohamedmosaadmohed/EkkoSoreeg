@@ -13,5 +13,6 @@ namespace EkkoSoreeg.Entities.ViewModels
         public IEnumerable<ShoppingCart> shoppingCarts { get; set; }
         public OrderHeader OrderHeader { get; set; }
         public decimal totalCarts { get; set; }
+        public decimal totalCartsWithShipping { get; set; }
     }
 }
