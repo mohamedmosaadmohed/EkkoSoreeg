@@ -34,6 +34,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		}
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize]
 		public IActionResult Details(ShoppingCart shoppingCart)
 		{
 			var claimsIdentity = (ClaimsIdentity)User.Identity;
