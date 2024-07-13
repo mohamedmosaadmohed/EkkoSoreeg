@@ -137,7 +137,10 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 				_unitOfWork.OrderDetails.Add(orderDetails);
 				_unitOfWork.Complete();
 			}
-			return RedirectToAction("Index", "Home");
+			_unitOfWork.ShoppingCart.RemoveRange(shoppingCartvm.shoppingCarts);
+			_unitOfWork.Complete();
+            TempData["Order"] = "Thank you for Placed Order";
+            return RedirectToAction("Index", "Home");
 		}
 	}
 }

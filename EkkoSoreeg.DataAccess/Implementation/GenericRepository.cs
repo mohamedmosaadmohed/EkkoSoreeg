@@ -67,7 +67,7 @@ namespace EkkoSoreeg.DataAccess.Implementation
 
         public void RemoveRange(IEnumerable<T> entities)
         {
-            throw new NotImplementedException();
+           _dbSet.RemoveRange(entities);
         }
     }
 }
