@@ -22,6 +22,7 @@ namespace EkkoSoreeg.Entities.Models
         public string? paymentStatus { get; set; }
         public string? TrackingNumber { get; set; }
         public string? Carrier { get; set; }
+        public bool Downloader { get; set; } = false;
         public DateTime paymentDate { get; set; }
 
         // Stripe

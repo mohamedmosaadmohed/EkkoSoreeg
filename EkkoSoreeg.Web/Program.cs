@@ -8,6 +8,7 @@ using EkkoSoreeg.Entities.Models;
 using EkkoSoreeg.Utilities;
 using EkkoSoreeg.DataAccess.Implementation;
 using EkkoSoreeg.Entities.Repositories;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+// Set the EPPlus license context to NonCommercial
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

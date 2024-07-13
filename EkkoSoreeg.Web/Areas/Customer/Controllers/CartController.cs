@@ -106,6 +106,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 
 			shoppingCartvm.OrderHeader.orderStatus = SD.Pending;
 			shoppingCartvm.OrderHeader.paymentStatus = SD.Pending;
+			shoppingCartvm.OrderHeader.Downloader = false;
 			shoppingCartvm.OrderHeader.orderDate = DateTime.Now;
 			shoppingCartvm.OrderHeader.ApplicationUserId = claim.Value;
 
