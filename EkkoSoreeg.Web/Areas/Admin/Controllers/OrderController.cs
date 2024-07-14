@@ -151,5 +151,16 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Orders.xlsx");
             }
         }
+        public IActionResult downloader(int orderid)
+        {
+            var orderHeader = _unitOfWork.OrderHeader.GetFirstorDefault(x => x.Id == orderid, IncludeWord: "applicationUser");
+            if (orderHeader != null)
+            {
+                orderHeader.Downloader = !orderHeader.Downloader;
+                _unitOfWork.Complete();
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

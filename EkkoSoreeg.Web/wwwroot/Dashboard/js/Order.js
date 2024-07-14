@@ -27,7 +27,20 @@ function loaddata() {
             {
                 "data": "id",
                 "render": function (data) {
-                    return `<a href="/Admin/Order/Details?orderid=${data}" class="btn btn-warning">Details</a>`;
+                    return `<a href="/Admin/Order/Details?orderid=${data}" class="btn btn-secondary"><i class="fa fa-info-circle"></i></a>`;
+                },
+                "orderable": false
+            },
+            {
+                data: "downloader",
+
+                "render": function (data,type,row) {
+                    if (data == false) {
+                        return `<a href="/Admin/Order/downloader?orderid=${row.id}" class="btn btn-danger"><i class="fas fa-times"></i></a>`;
+                    }
+                    else {
+                        return `<a href="/Admin/Order/downloader?orderid=${row.id}" class="btn btn-success"><i class="fas fa-check"></i></a>`;
+                    }
                 },
                 "orderable": false
             }
