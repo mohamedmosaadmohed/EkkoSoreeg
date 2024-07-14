@@ -17,8 +17,7 @@
         public const string Refund = "Refund";  //Return Money
         public const string Rejected = "Rejected";
 
-
-        public const string SessionKey = "";
+        public const string SessionKey = "ShoppingCartSession";
 
     }
 }

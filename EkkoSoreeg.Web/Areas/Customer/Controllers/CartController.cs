@@ -5,6 +5,7 @@ using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static System.Net.WebRequestMethods;
 
 namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 {
@@ -47,8 +48,8 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			if (shoppingCart.Count <= 1)
 			{
 				_unitOfWork.ShoppingCart.Remove(shoppingCart);
-				_unitOfWork.Complete();
-				return RedirectToAction("Index", "Home");
+				var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count() -1;
+				HttpContext.Session.SetInt32(SD.SessionKey, count);
 			}
 			_unitOfWork.ShoppingCart.decreaseCount(shoppingCart, 1);
 			_unitOfWork.Complete();
@@ -59,6 +60,8 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			var shoppingCart = _unitOfWork.ShoppingCart.GetFirstorDefault(x => x.shoppingId == cartid);
 			_unitOfWork.ShoppingCart.Remove(shoppingCart);
 			_unitOfWork.Complete();
+			var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count();
+			HttpContext.Session.SetInt32(SD.SessionKey, count);
 			return RedirectToAction("Index");
 		}
 

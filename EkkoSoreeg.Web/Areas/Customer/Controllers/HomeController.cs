@@ -1,5 +1,6 @@
 ﻿using EkkoSoreeg.Entities.Models;
 using EkkoSoreeg.Entities.Repositories;
+using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -44,12 +45,19 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 				U => U.ApplicationUserId == claim.Value && U.ProductId == shoppingCart.ProductId
 			);
 			if (cartObj == null)
+			{
 				_unitOfWork.ShoppingCart.Add(shoppingCart);
+				_unitOfWork.Complete();
+				HttpContext.Session.SetInt32(SD.SessionKey,
+					_unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == claim.Value).ToList().Count());
+
+			}
 			else
 			{
 				_unitOfWork.ShoppingCart.IncreaseCount(cartObj, shoppingCart.Count);
+				_unitOfWork.Complete();
 			}
-			_unitOfWork.Complete();
+			
 			return RedirectToAction("Index");
 		}
 	}
