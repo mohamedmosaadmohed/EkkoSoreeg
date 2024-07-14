@@ -85,26 +85,26 @@
                             <div>
                                 <h6 class="my-0"><strong>Product Name</strong></h6>
                             </div>
-                            <span class="text-muted"><strong>Total Price</strong></span>
+                            <span class="text-muted"><strong>Price</strong></span>
                         </li>
                         @foreach (var item in Model.shoppingCarts)
                         {
                             <li class="list-group-item d-flex justify-content-between lh-condensed">
                                 <div>
-                                    <h6 class="my-0">@item.Product.Name</h6>
+                                    <h6 class="my-0">@item.Product.Name (@item.Count)</h6>
                                 </div>
-                                <span class="text-muted">£ @item.Product.Price</span>
+                                <span class="text-muted">EGP @Model.OrderHeader.totalPrice</span>
                             </li>
                         }
                     </ul>
                     <ul class="list-group mb-3">
                         <li class="list-group-item d-flex justify-content-between">
-                            <strong>Shipping fee:</strong> 
-                            <strong style="color:#717FE0">£ 50</strong>
+                            <strong>Delivery fees:</strong>
+                            <strong style="color:#717FE0">EGP 50</strong>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <strong>Total (EGP)</strong>
-                            <strong style="color:#717FE0">£ @Model.OrderHeader.totalPrice </strong>
+                            <strong style="color:#717FE0"> @Model.totalCartsWithShipping </strong>
                         </li>
                     </ul>
                     <button type="submit" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15" asp-action="Checkout">

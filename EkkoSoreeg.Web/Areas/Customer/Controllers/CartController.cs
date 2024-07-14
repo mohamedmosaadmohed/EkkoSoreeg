@@ -125,8 +125,9 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			{
 				shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.Price);
 			}
+			shoppingCartvm.OrderHeader.totalPrice = shoppingCartvm.OrderHeader.totalPrice + 50;
 
-			_unitOfWork.OrderHeader.Add(shoppingCartvm.OrderHeader);
+            _unitOfWork.OrderHeader.Add(shoppingCartvm.OrderHeader);
 			_unitOfWork.Complete();
 
 			foreach (var item in shoppingCartvm.shoppingCarts)
