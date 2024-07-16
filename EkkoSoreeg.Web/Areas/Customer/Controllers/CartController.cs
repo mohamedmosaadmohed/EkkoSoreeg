@@ -64,7 +64,6 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			HttpContext.Session.SetInt32(SD.SessionKey, count);
 			return RedirectToAction("Index");
 		}
-
 		[HttpGet]
 		public IActionResult Checkout()
 		{

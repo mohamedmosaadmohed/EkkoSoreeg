@@ -1,0 +1,117 @@
+﻿@using EkkoSoreeg.Entities.ViewModels
+@model ShoppingCartVM
+
+
+<div class="wrap-header-cart js-panel-cart">
+	<div class="s-full js-hide-cart"></div>
+
+	<div class="header-cart flex-col-l p-l-65 p-r-25">
+		<div class="header-cart-title flex-w flex-sb-m p-b-8">
+			<span class="mtext-103 cl2">
+				Your Cart
+			</span>
+
+			<div class="fs-35 lh-10 cl2 p-lr-5 pointer hov-cl1 trans-04 js-hide-cart">
+				<i class="zmdi zmdi-close"></i>
+			</div>
+		</div>
+		@if (Model.totalCarts != 0)
+		{
+			<div class="header-cart-content flex-w js-pscroll">
+				@foreach (var item in Model.shoppingCarts)
+				{
+					<ul class="header-cart-wrapitem w-full">
+						<li class="header-cart-item flex-w flex-t m-b-12">
+							<div class="header-cart-item-img">
+								<img src="~/@item.Product.Image" alt="IMG">
+							</div>
+
+							<div class="header-cart-item-txt p-t-8">
+								<a href="#" class="header-cart-item-name m-b-18 hov-cl1 trans-04">
+									@item.Product.Name
+								</a>
+
+								<span class="header-cart-item-info">
+									@item.Product.Price
+								</span>
+							</div>
+						</li>
+					</ul>
+				}
+				<div class="w-full">
+					<div class="header-cart-total w-full p-tb-40">
+						Total: @Model.totalCarts
+					</div>
+
+					<div class="header-cart-buttons flex-w w-full">
+						<a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-r-8 m-b-10">
+							View Cart
+						</a>
+
+						<a href="shoping-cart.html" class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-b-10">
+							Check Out
+						</a>
+					</div>
+				</div>
+			</div>
+		}
+		else
+		{
+			<style>
+				.card {
+					margin-bottom: 30px;
+					border: 0;
+					-webkit-transition: all .3s ease;
+					transition: all .3s ease;
+					letter-spacing: .5px;
+					border-radius: 8px;
+					-webkit-box-shadow: 1px 5px 24px 0 rgba(68,102,242,.05);
+					box-shadow: 1px 5px 24px 0 rgba(68,102,242,.05);
+				}
+
+					.card .card-header {
+						background-color: #fff;
+						border-bottom: none;
+						padding: 24px;
+						border-bottom: 1px solid #f6f7fb;
+						border-top-left-radius: 8px;
+						border-top-right-radius: 8px;
+					}
+
+				.card-header:first-child {
+					border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+				}
+
+
+
+				.card .card-body {
+					padding: 30px;
+					background-color: transparent;
+				}
+
+				.btn-primary, .btn-primary.disabled, .btn-primary:disabled {
+					background-color: #717FE0 !important;
+					border-color: #717FE0 !important;
+					padding: 10px 10px;
+				}
+			</style>
+			<div class="container-fluid mt-100">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-header">
+							</div>
+							<div class="card-body cart">
+								<div class="col-sm-12 empty-cart-cls text-center">
+									<img src="https://i.imgur.com/dCdflKN.png" width="130" height="130" class="img-fluid mb-4 mr-3">
+									<h3><strong>Your Cart is Empty</strong></h3>
+									<a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-primary cart-btn-transform m-3">continue shopping</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>
