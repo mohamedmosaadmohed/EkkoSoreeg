@@ -145,11 +145,15 @@
                         }
                         @if (Model.orderHeader.orderStatus == SD.Approve)
                         {
-                            <input type="submit" class="btn btn-success m-1" onclick="return CheckData()" asp-action="StartShipping" name="action" value="StartShipping" />
+                            <input type="submit" class="btn btn-Secondary m-1" onclick="return CheckData()" asp-action="StartShipping" name="action" value="StartShipping" />
                         }
                         @if (Model.orderHeader.orderStatus != SD.Cancelled && Model.orderHeader.orderStatus != SD.Refund)
                         {
-                            <button type="submit" class="btn btn-danger m-1" name="action" value="CancelOrder">Cancel Order</button>
+                            <button type="submit" class="btn btn-danger m-1" asp-action="CancelOrder" name="action" value="CancelOrder">Cancel Order</button>
+                        }
+                        @if (Model.orderHeader.orderStatus == SD.Shipped)
+                        {
+                            <button type="submit" class="btn btn-success m-1" asp-action="CloseOrder" name="action" value="CloseOrder">Close Order</button>
                         }
                     </div>
                 </div>

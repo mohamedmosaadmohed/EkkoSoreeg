@@ -94,6 +94,32 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             TempData["Update"] = "Order Has been Start Shipping Successfully";
             return RedirectToAction("Details", "Order", new { orderid = OrderVM.orderHeader.Id });
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CancelOrder()
+        {
+            var orderFromDB = _unitOfWork.OrderHeader.GetFirstorDefault(X => X.Id == OrderVM.orderHeader.Id);
+
+            orderFromDB.orderStatus = SD.Cancelled;
+
+            _unitOfWork.OrderHeader.Update(orderFromDB);
+            _unitOfWork.Complete();
+            TempData["Update"] = "Order Has been Cancelled";
+            return RedirectToAction("Details", "Order", new { orderid = OrderVM.orderHeader.Id });
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CloseOrder()
+        {
+            var orderFromDB = _unitOfWork.OrderHeader.GetFirstorDefault(X => X.Id == OrderVM.orderHeader.Id);
+
+            orderFromDB.orderStatus = SD.Closed;
+
+            _unitOfWork.OrderHeader.Update(orderFromDB);
+            _unitOfWork.Complete();
+            TempData["Update"] = "Order Has been Closed";
+            return RedirectToAction("Details", "Order", new { orderid = OrderVM.orderHeader.Id });
+        }
 
         public IActionResult DownloadExcelSheet()
         {

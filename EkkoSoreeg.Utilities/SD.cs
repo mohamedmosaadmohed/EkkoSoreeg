@@ -14,6 +14,7 @@
         public const string Proccessing = "Proccessing";
         public const string Cancelled = "Cancelled";
         public const string Shipped = "Shipped";
+        public const string Closed = "Closed";
         public const string Refund = "Refund";  //Return Money
         public const string Rejected = "Rejected";
 
