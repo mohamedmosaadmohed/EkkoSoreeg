@@ -35,6 +35,11 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Address { get; set; }
+            public string Region { get; set; }
+            public string City { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -46,7 +51,12 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Address = user.Address,
+                Region = user.Region,
+                City = user.City,
             };
         }
 
@@ -65,6 +75,36 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
+            var address = user.Address;
+            var city = user.City;
+            var region = user.Region;
+            if (Input.FirstName != firstName)
+            {
+                user.FirstName = Input.FirstName;
+                await _userManager.UpdateAsync(user);
+            }
+            if (Input.LastName != lastName)
+            {
+                user.LastName = Input.LastName;
+                await _userManager.UpdateAsync(user);
+            }
+            if (Input.Address != address)
+            {
+                user.Address = Input.Address;
+                await _userManager.UpdateAsync(user);
+            }
+            if (Input.City != city)
+            {
+                user.City = Input.City;
+                await _userManager.UpdateAsync(user);
+            }
+            if (Input.Region != region)
+            {
+                user.Region = Input.Region;
+                await _userManager.UpdateAsync(user);
+            }
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");

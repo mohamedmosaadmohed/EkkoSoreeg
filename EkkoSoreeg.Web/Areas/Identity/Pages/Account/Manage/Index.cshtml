@@ -16,27 +16,42 @@
                     <h3 class="mb-3">@ViewData["Title"]</h3>
                     <hr />
                     <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                    <div class="row mb-3">
+                        <div class="col-md-6 form-floating">
+                            <input asp-for="Input.FirstName" class="form-control" placeholder="Please enter your First Name." />
+                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 form-floating">
+                            <input asp-for="Input.LastName" class="form-control" placeholder="Please enter your Last Name." />
+                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                        </div>
+                    </div>
                     <div class="form-floating mb-3">
                         <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
+                        <input asp-for="Input.Address" class="form-control" placeholder="Please enter your Address." />
+                        <span asp-validation-for="Input.Address" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your Phone." />
                         <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
-                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                        <input asp-for="Input.Region" class="form-control" placeholder="Please enter your Regin." />
+                        <span asp-validation-for="Input.Region" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
-                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                        <input asp-for="Input.City" class="form-control" placeholder="Please enter your City." />
+                        <span asp-validation-for="Input.City" class="text-danger"></span>
                     </div>
                     <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
                 </form>
             </div>
         </div>
-    </<div>
+    </div>
 </section>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
