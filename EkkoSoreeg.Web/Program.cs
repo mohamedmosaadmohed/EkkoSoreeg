@@ -9,14 +9,17 @@ using EkkoSoreeg.Utilities;
 using EkkoSoreeg.DataAccess.Implementation;
 using EkkoSoreeg.Entities.Repositories;
 using OfficeOpenXml;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .EnableSensitiveDataLogging();
+});
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(4);
