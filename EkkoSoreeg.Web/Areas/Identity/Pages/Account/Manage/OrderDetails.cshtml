@@ -1,0 +1,27 @@
+﻿@page "{id:int}"
+@using EkkoSoreeg.Web.Pages.Orders
+@model OrderDetailsModel
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<h2>Order Details</h2>
+
+<div>
+    <h4>To: @Model.OrderHeader.FirstName @Model.OrderHeader.LastName</h4>
+    <p>Order Date: @Model.OrderHeader.orderDate.ToShortDateString()</p>
+    <p>Status: @Model.OrderHeader.orderStatus</p>
+
+    <h4>Products</h4>
+    <ul>
+        @foreach (var detail in Model.OrderDetails)
+        {
+            <li>
+                <img src="~/@detail.product.Image" alt="Product Image" width="100" height="100" />
+                <p>Name: @detail.product.Name</p>
+                <p>Price: @detail.product.Price EGP</p>
+                <p>Quantity: @detail.Count</p>
+            </li>
+        }
+    </ul>
+</div>
