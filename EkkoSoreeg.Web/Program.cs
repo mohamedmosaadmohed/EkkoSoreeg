@@ -10,6 +10,8 @@ using EkkoSoreeg.DataAccess.Implementation;
 using EkkoSoreeg.Entities.Repositories;
 using OfficeOpenXml;
 using System.Configuration;
+using EkkoSoreeg.Web.DataSeed;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,5 +67,10 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
-
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    SeedData.Initialize(services).Wait();
+}
 app.Run();
