@@ -15,6 +15,8 @@ namespace EkkoSoreeg.DataAccess.Data
         public virtual DbSet<ShoppingCart> TbShoppingCarts { get; set; }
         public virtual DbSet<OrderHeader> TbOrderHeaders { get; set; }
         public virtual DbSet<OrderDetails> TbOrderDetails { get; set; }
+        public virtual DbSet<ProductColor> TbProductColors { get; set; }
+        public virtual DbSet<ProductSize> TbProductSizes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

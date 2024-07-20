@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EkkoSoreeg.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class Ekko : Migration
+    public partial class koo : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -249,6 +249,10 @@ namespace EkkoSoreeg.DataAccess.Migrations
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OfferPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Stock = table.Column<int>(type: "int", nullable: false),
+                    StockType = table.Column<bool>(type: "bit", nullable: false),
+                    SaleNumber = table.Column<int>(type: "int", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CatagoryId = table.Column<int>(type: "int", nullable: false),
                     ShoppingCartshoppingId = table.Column<int>(type: "int", nullable: true)
@@ -260,6 +264,46 @@ namespace EkkoSoreeg.DataAccess.Migrations
                         name: "FK_TbProduct_TbCatagory_CatagoryId",
                         column: x => x.CatagoryId,
                         principalTable: "TbCatagory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TbProductColors",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TbProductColors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TbProductColors_TbProduct_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "TbProduct",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TbProductSizes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TbProductSizes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TbProductSizes_TbProduct_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "TbProduct",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -356,6 +400,16 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 column: "ShoppingCartshoppingId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TbProductColors_ProductId",
+                table: "TbProductColors",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TbProductSizes_ProductId",
+                table: "TbProductSizes",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TbShoppingCarts_ApplicationUserId",
                 table: "TbShoppingCarts",
                 column: "ApplicationUserId");
@@ -409,6 +463,12 @@ namespace EkkoSoreeg.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "TbOrderDetails");
+
+            migrationBuilder.DropTable(
+                name: "TbProductColors");
+
+            migrationBuilder.DropTable(
+                name: "TbProductSizes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

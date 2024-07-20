@@ -13,6 +13,8 @@ namespace EkkoSoreeg.DataAccess.Implementation
 
 		public IOrderDetailsRepository OrderDetails { get; private set; }
 		public IApplicationUserRepository ApplicationUser { get; private set; }
+		public IColorRepository Color { get; private set; }
+		public ISizeRepository Size { get; private set; }
 
 		public UnitOfWork(ApplicationDbContext context)
 		{
@@ -23,6 +25,8 @@ namespace EkkoSoreeg.DataAccess.Implementation
 			OrderHeader = new OrderHeaderRepository(context);
 			OrderDetails = new OrderDetailsRepository(context);
 			ApplicationUser = new ApplicationUserRepository(context);
+			Color = new ColorRepository(context);
+			Size = new SizeRepository(context);
 		}
 		public int Complete()
 		{

@@ -4,6 +4,7 @@ using EkkoSoreeg.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EkkoSoreeg.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240720000716_koo")]
+    partial class koo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -230,7 +233,7 @@ namespace EkkoSoreeg.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -252,7 +255,7 @@ namespace EkkoSoreeg.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -577,16 +580,24 @@ namespace EkkoSoreeg.DataAccess.Migrations
 
             modelBuilder.Entity("EkkoSoreeg.Entities.Models.ProductColor", b =>
                 {
-                    b.HasOne("EkkoSoreeg.Entities.Models.Product", null)
+                    b.HasOne("EkkoSoreeg.Entities.Models.Product", "product")
                         .WithMany("Colors")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("product");
                 });
 
             modelBuilder.Entity("EkkoSoreeg.Entities.Models.ProductSize", b =>
                 {
-                    b.HasOne("EkkoSoreeg.Entities.Models.Product", null)
+                    b.HasOne("EkkoSoreeg.Entities.Models.Product", "product")
                         .WithMany("Sizes")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("product");
                 });
 
             modelBuilder.Entity("EkkoSoreeg.Entities.Models.ShoppingCart", b =>

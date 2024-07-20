@@ -15,6 +15,8 @@ namespace EkkoSoreeg.Entities.Repositories
         IOrderHeaderRepository OrderHeader { get; }
         IOrderDetailsRepository OrderDetails { get; }
 		IApplicationUserRepository ApplicationUser { get; }
+        IColorRepository Color { get; }
+        ISizeRepository Size { get; }
 		int Complete();
     }
 }

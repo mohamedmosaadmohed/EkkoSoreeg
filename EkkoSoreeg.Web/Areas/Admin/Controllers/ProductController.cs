@@ -42,7 +42,18 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 {
                     Text = X.Name,
                     Value = X.Id.ToString()
-                })
+                }),
+                ColorList = _unitOfWork.Color.GetAll().Select(X => new SelectListItem
+                {
+                    Text = X.Name,
+                    Value = X.Id.ToString()
+                }),
+                SizeList = _unitOfWork.Size.GetAll().Select(X => new SelectListItem
+                {
+                    Text = X.Name,
+                    Value = X.Id.ToString()
+                }),
+
             };
             return View(productVM);
         }
