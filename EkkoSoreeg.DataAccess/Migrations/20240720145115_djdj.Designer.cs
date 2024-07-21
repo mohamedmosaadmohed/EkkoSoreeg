@@ -4,6 +4,7 @@ using EkkoSoreeg.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EkkoSoreeg.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240720145115_djdj")]
+    partial class djdj
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -283,17 +286,17 @@ namespace EkkoSoreeg.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("ProductColorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductSizeId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductColorId");
 
-                    b.HasIndex("ProductSizeId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductSizeMappings");
                 });
@@ -632,15 +635,15 @@ namespace EkkoSoreeg.DataAccess.Migrations
 
             modelBuilder.Entity("EkkoSoreeg.Entities.Models.ProductSizeMapping", b =>
                 {
-                    b.HasOne("EkkoSoreeg.Entities.Models.Product", "Product")
+                    b.HasOne("EkkoSoreeg.Entities.Models.ProductSize", "ProductSize")
                         .WithMany("ProductSizeMappings")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("ProductColorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EkkoSoreeg.Entities.Models.ProductSize", "ProductSize")
+                    b.HasOne("EkkoSoreeg.Entities.Models.Product", "Product")
                         .WithMany("ProductSizeMappings")
-                        .HasForeignKey("ProductSizeId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

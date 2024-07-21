@@ -17,12 +17,35 @@ namespace EkkoSoreeg.DataAccess.Data
         public virtual DbSet<OrderDetails> TbOrderDetails { get; set; }
         public virtual DbSet<ProductColor> TbProductColors { get; set; }
         public virtual DbSet<ProductSize> TbProductSizes { get; set; }
+        public DbSet<ProductColorMapping> ProductColorMappings { get; set; }
+        public DbSet<ProductSizeMapping> ProductSizeMappings { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<ProductColorMapping>()
+            .HasOne(pcm => pcm.Product)
+            .WithMany(p => p.ProductColorMappings)
+            .HasForeignKey(pcm => pcm.ProductId);
+
+            modelBuilder.Entity<ProductColorMapping>()
+                .HasOne(pcm => pcm.ProductColor)
+                .WithMany(pc => pc.ProductColorMappings)
+                .HasForeignKey(pcm => pcm.ProductColorId);
+
+
+            modelBuilder.Entity<ProductSizeMapping>()
+                .HasOne(pcm => pcm.Product)
+                .WithMany(p => p.ProductSizeMappings)
+                .HasForeignKey(pcm => pcm.ProductId);
+
+            modelBuilder.Entity<ProductSizeMapping>()
+                .HasOne(pcm => pcm.ProductSize)
+                .WithMany(pc => pc.ProductSizeMappings)
+                .HasForeignKey(pcm => pcm.ProductSizeId);
         }
     }
 }

@@ -61,21 +61,32 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- For Colors -->
                         <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label">Color</label>
-                            <div class="col-sm-10">
-                                <select class="form-select" asp-for="Product.Colors" asp-items="Model.ColorList" multiple="multiple" name="Product.Colors">
-                                </select>
+                            <div class="col-sm-10 offset-sm-2">
+                                <div class="d-flex flex-wrap">
+                                    @foreach (var item in Model.ColorList)
+                                    {
+                                        <div class="form-check me-3">
+                                            <input class="form-check-input" type="checkbox" name="SelectedColors" value="@item.Value" id="colorCheck@item.Value">
+                                            <label class="form-check-label" for="colorCheck@item.Value">
+                                                @item.Text
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </div>
-
-                        <!-- For Sizes -->
                         <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label">Size</label>
-                            <div class="col-sm-10">
-                                <select class="form-select" asp-for="Product.Sizes" asp-items="Model.SizeList" multiple="multiple" name="Product.Sizes">
-                                </select>
+                            <div class="col-sm-10 offset-sm-2">
+                                    @foreach (var item in Model.SizeList)
+                                    {
+                                        <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="SelectedSizes" value="@item.Value" id="sizeCheck@item.Value">
+                                        <label class="form-check-label" for="sizeCheck@item.Value">
+                                                @item.Text
+                                            </label>
+                                        </div>
+                                    }
                             </div>
                         </div>
                         <div class="text-center">

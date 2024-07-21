@@ -14,7 +14,9 @@ namespace EkkoSoreeg.Entities.ViewModels
         public Product Product { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> CatagoryList { get; set; }
+        [ValidateNever]
         public IEnumerable<SelectListItem> ColorList { get; set; }
+        [ValidateNever]
         public IEnumerable<SelectListItem> SizeList { get; set; }
     }
 }

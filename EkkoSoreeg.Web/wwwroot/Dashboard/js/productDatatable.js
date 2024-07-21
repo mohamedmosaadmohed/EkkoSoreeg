@@ -6,17 +6,32 @@ $(document).ready(function () {
 function loaddata() {
     dtble = $("#mytable").DataTable({
         "filter": true,
+        "processing": true,
+        "serverSide": true,
         "ajax": {
-            "url": "/Admin/Product/GetData"
+            "url": "/Admin/Product/GetData",
+            "type": "GET",
+            "datatype": "json",
+            "dataSrc": "data"
         },
-        "type": "GET",
-        "datatype": "json",
         "columns": [
             { "data": "name" },
-            { "data": "description" },
+            { "data": "stock" },
+            {
+                "data": "stockType",
+                "render": function (data) {
+                    return data ? 'Out of Stock':'In Stock';
+                }
+            },
             { "data": "price" },
             { "data": "createDate" },
             { "data": "tbCatagory.name" },
+            {
+                "data": "productColors",
+                "render": function (data) {
+                    return data.join(", ");
+                }
+            },
             {
                 "data": "id",
                 "render": function (data) {
@@ -34,6 +49,8 @@ function loaddata() {
         ]
     });
 }
+
+
 
 function DeleteItem(url) {
     Swal.fire({

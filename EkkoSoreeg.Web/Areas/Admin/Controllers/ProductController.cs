@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using EkkoSoreeg.Entities.ViewModels;
 using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using EkkoSoreeg.DataAccess.Data;
 
 namespace EkkoSoreeg.Areas.Admin.Controllers
 {
@@ -14,18 +15,35 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        private readonly ApplicationDbContext _context;
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment , ApplicationDbContext context)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _context = context;
 
         }
-        [HttpGet]
         public IActionResult GetData()
         {
-            var products = _unitOfWork.Product.GetAll(IncludeWord: "TbCatagory");
-            return Json(new { data = products });
+            var products = _unitOfWork.Product.GetAll(IncludeWord: "TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize");
+            var productList = products.Select(p => new
+            {
+                p.Id,
+                p.Name,
+                p.Stock,
+                p.StockType,
+                p.Price,
+                p.OfferPrice,
+                p.CreateDate,
+                TbCatagory = new { p.TbCatagory.Id, p.TbCatagory.Name, p.TbCatagory.Description, p.TbCatagory.CreateDate },
+                ProductColors = p.ProductColorMappings.Select(c => c.ProductColor.Name).ToList(),
+                ProductSizes = p.ProductSizeMappings.Select(s => s.ProductSize.Name).ToList()
+            }).ToList();
+
+            return Json(new { data = productList });
         }
+
+
 
         public IActionResult Index()
         {
@@ -53,13 +71,12 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     Text = X.Name,
                     Value = X.Id.ToString()
                 }),
-
             };
+
             return View(productVM);
         }
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
-        public IActionResult Create(ProductVM Productvm, IFormFile file)
+        public IActionResult Create(ProductVM productVM, IFormFile file, List<int> SelectedColors, List<int> SelectedSizes)
         {
             if (ModelState.IsValid)
             {
@@ -67,22 +84,48 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 if (file != null)
                 {
                     string filename = Guid.NewGuid().ToString();
-                    var Upload = Path.Combine(rootPath, @"Dashboard\Images\Products");
-                    var extention = Path.GetExtension(file.FileName); // .JPG
-                    using (var fileStream = new FileStream(Path.Combine(Upload, filename + extention), FileMode.Create))
+                    var uploadPath = Path.Combine(rootPath, @"Dashboard\Images\Products");
+                    var extension = Path.GetExtension(file.FileName);
+                    using (var fileStream = new FileStream(Path.Combine(uploadPath, filename + extension), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
                     }
-                    Productvm.Product.Image = @"Dashboard\Images\Products\" + filename + extention;
+                    productVM.Product.Image = @"Dashboard\Images\Products\" + filename + extension;
                 }
-                _unitOfWork.Product.Add(Productvm.Product);
+
+                // Add product
+                _unitOfWork.Product.Add(productVM.Product);
+                _unitOfWork.Complete();
+
+                // Add selected colors
+                foreach (var colorId in SelectedColors)
+                {
+                    var productColorMapping = new ProductColorMapping
+                    {
+                        ProductId = productVM.Product.Id,
+                        ProductColorId = colorId
+                    };
+                    _context.ProductColorMappings.Add(productColorMapping);
+                }
+
+                // Add selected sizes
+                foreach (var sizeId in SelectedSizes)
+                {
+                    var productSizeMapping = new ProductSizeMapping
+                    {
+                        ProductId = productVM.Product.Id,
+                        ProductSizeId = sizeId
+                    };
+                    _context.ProductSizeMappings.Add(productSizeMapping);
+                }
+
                 _unitOfWork.Complete();
                 TempData["Create"] = "Product Has been Created Successfully";
                 return RedirectToAction("Index");
             }
-            return View(Productvm.Product);
-
+            return View(productVM);
         }
+
         [HttpGet]
         public IActionResult Update(int? id)
         {

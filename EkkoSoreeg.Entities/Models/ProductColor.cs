@@ -11,5 +11,7 @@ namespace EkkoSoreeg.Entities.Models
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+        [ValidateNever]
+        public ICollection<ProductColorMapping> ProductColorMappings { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EkkoSoreeg.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class koo : Migration
+    public partial class djdj : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -70,6 +70,32 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TbCatagory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TbProductColors",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TbProductColors", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TbProductSizes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TbProductSizes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -218,6 +244,46 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductColorMappings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    ProductColorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductColorMappings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductColorMappings_TbProductColors_ProductColorId",
+                        column: x => x.ProductColorId,
+                        principalTable: "TbProductColors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductSizeMappings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    ProductColorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductSizeMappings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductSizeMappings_TbProductSizes_ProductColorId",
+                        column: x => x.ProductColorId,
+                        principalTable: "TbProductSizes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TbOrderDetails",
                 columns: table => new
                 {
@@ -264,46 +330,6 @@ namespace EkkoSoreeg.DataAccess.Migrations
                         name: "FK_TbProduct_TbCatagory_CatagoryId",
                         column: x => x.CatagoryId,
                         principalTable: "TbCatagory",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TbProductColors",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TbProductColors", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TbProductColors_TbProduct_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "TbProduct",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TbProductSizes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TbProductSizes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TbProductSizes_TbProduct_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "TbProduct",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -375,6 +401,26 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductColorMappings_ProductColorId",
+                table: "ProductColorMappings",
+                column: "ProductColorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductColorMappings_ProductId",
+                table: "ProductColorMappings",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductSizeMappings_ProductColorId",
+                table: "ProductSizeMappings",
+                column: "ProductColorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductSizeMappings_ProductId",
+                table: "ProductSizeMappings",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TbOrderDetails_OrderHeaderId",
                 table: "TbOrderDetails",
                 column: "OrderHeaderId");
@@ -400,16 +446,6 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 column: "ShoppingCartshoppingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TbProductColors_ProductId",
-                table: "TbProductColors",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TbProductSizes_ProductId",
-                table: "TbProductSizes",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TbShoppingCarts_ApplicationUserId",
                 table: "TbShoppingCarts",
                 column: "ApplicationUserId");
@@ -418,6 +454,22 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 name: "IX_TbShoppingCarts_ProductId",
                 table: "TbShoppingCarts",
                 column: "ProductId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ProductColorMappings_TbProduct_ProductId",
+                table: "ProductColorMappings",
+                column: "ProductId",
+                principalTable: "TbProduct",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ProductSizeMappings_TbProduct_ProductId",
+                table: "ProductSizeMappings",
+                column: "ProductId",
+                principalTable: "TbProduct",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_TbOrderDetails_TbProduct_productId",
@@ -462,16 +514,22 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ProductColorMappings");
+
+            migrationBuilder.DropTable(
+                name: "ProductSizeMappings");
+
+            migrationBuilder.DropTable(
                 name: "TbOrderDetails");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "TbProductColors");
 
             migrationBuilder.DropTable(
                 name: "TbProductSizes");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "TbOrderHeaders");
