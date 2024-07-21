@@ -18,5 +18,7 @@ namespace EkkoSoreeg.Entities.ViewModels
         public IEnumerable<SelectListItem> ColorList { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> SizeList { get; set; }
+        public List<int> SelectedColors { get; set; }
+        public List<int> SelectedSizes { get; set; }
     }
 }

@@ -26,6 +26,8 @@ namespace EkkoSoreeg.DataAccess.Implementation
                 productInDb.Name = product.Name;
                 productInDb.Description = product.Description;
                 productInDb.Price = product.Price;
+                productInDb.OfferPrice = product.OfferPrice;
+                productInDb.Stock = product.Stock;
                 productInDb.Image = product.Image;
                 productInDb.CatagoryId = product.CatagoryId;
                 productInDb.CreateDate = DateTime.Now;

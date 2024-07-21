@@ -6,6 +6,7 @@ using EkkoSoreeg.Entities.ViewModels;
 using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using EkkoSoreeg.DataAccess.Data;
+using System.Drawing;
 
 namespace EkkoSoreeg.Areas.Admin.Controllers
 {
@@ -76,26 +77,48 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             return View(productVM);
         }
         [HttpPost]
-        public IActionResult Create(ProductVM productVM, IFormFile file, List<int> SelectedColors, List<int> SelectedSizes)
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> Create(ProductVM productVM, List<IFormFile> files, List<int> SelectedColors, List<int> SelectedSizes)
         {
             if (ModelState.IsValid)
             {
                 string rootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                List<string> imagePaths = new List<string>();
+
+                if (files != null && files.Count > 0)
                 {
-                    string filename = Guid.NewGuid().ToString();
-                    var uploadPath = Path.Combine(rootPath, @"Dashboard\Images\Products");
-                    var extension = Path.GetExtension(file.FileName);
-                    using (var fileStream = new FileStream(Path.Combine(uploadPath, filename + extension), FileMode.Create))
+                    foreach (var file in files)
                     {
-                        file.CopyTo(fileStream);
+                        string filename = Guid.NewGuid().ToString();
+                        var uploadPath = Path.Combine(rootPath, @"Dashboard\Images\Products");
+                        var extension = Path.GetExtension(file.FileName);
+                        var filePath = Path.Combine(uploadPath, filename + extension);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        imagePaths.Add(@"Dashboard\Images\Products\" + filename + extension);
                     }
-                    productVM.Product.Image = @"Dashboard\Images\Products\" + filename + extension;
+
+                    // Store the first image as the main product image
+                    productVM.Product.Image = imagePaths.First();
                 }
 
                 // Add product
                 _unitOfWork.Product.Add(productVM.Product);
                 _unitOfWork.Complete();
+
+                // Add product image mappings
+                foreach (var imagePath in imagePaths.Skip(1))
+                {
+                    var productImage = new ProductImage
+                    {
+                        ProductId = productVM.Product.Id,
+                        ImagePath = imagePath
+                    };
+                   await _context.ProductImages.AddAsync(productImage);
+                }
 
                 // Add selected colors
                 foreach (var colorId in SelectedColors)
@@ -105,7 +128,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                         ProductId = productVM.Product.Id,
                         ProductColorId = colorId
                     };
-                    _context.ProductColorMappings.Add(productColorMapping);
+                   await _context.ProductColorMappings.AddAsync(productColorMapping);
                 }
 
                 // Add selected sizes
@@ -116,7 +139,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                         ProductId = productVM.Product.Id,
                         ProductSizeId = sizeId
                     };
-                    _context.ProductSizeMappings.Add(productSizeMapping);
+                    await _context.ProductSizeMappings.AddAsync(productSizeMapping);
                 }
 
                 _unitOfWork.Complete();
@@ -125,13 +148,20 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             }
             return View(productVM);
         }
-
         [HttpGet]
         public IActionResult Update(int? id)
         {
             if (id == null | id == 0)
                 NotFound();
+            var selectedColors = _context.ProductColorMappings
+                                  .Where(x => x.ProductId == id)
+                                  .Select(x => x.ProductColorId)
+                                  .ToList();
 
+            var selectedSizes = _context.ProductSizeMappings
+                                        .Where(x => x.ProductId == id)
+                                        .Select(x => x.ProductSizeId)
+                                        .ToList();
             ProductVM productVM = new ProductVM()
             {
                 Product = _unitOfWork.Product.GetFirstorDefault(x => x.Id == id),
@@ -139,13 +169,25 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 {
                     Text = X.Name,
                     Value = X.Id.ToString()
-                })
+                }),
+                ColorList = _unitOfWork.Color.GetAll().Select(X => new SelectListItem
+                {
+                    Text = X.Name,
+                    Value = X.Id.ToString()
+                }),
+                SizeList = _unitOfWork.Size.GetAll().Select(X => new SelectListItem
+                {
+                    Text = X.Name,
+                    Value = X.Id.ToString()
+                }),
+                SelectedColors = selectedColors,
+                SelectedSizes = selectedSizes
             };
             return View(productVM);
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Update(ProductVM Productvm, IFormFile? file)
+        public IActionResult Update(ProductVM productVM, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
@@ -153,29 +195,92 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 if (file != null)
                 {
                     string filename = Guid.NewGuid().ToString();
-                    var Upload = Path.Combine(rootPath, @"Dashboard\Images\Products");
-                    var extention = Path.GetExtension(file.FileName);
-                    if (Productvm.Product.Image != null)
+                    var uploadPath = Path.Combine(rootPath, @"Dashboard\Images\Products");
+                    var extension = Path.GetExtension(file.FileName);
+                    if (productVM.Product.Image != null)
                     {
-                        var oldimg = Path.Combine(rootPath, Productvm.Product.Image.TrimStart('\\'));
-                        if (System.IO.File.Exists(oldimg))
+                        var oldImage = Path.Combine(rootPath, productVM.Product.Image.TrimStart('\\'));
+                        if (System.IO.File.Exists(oldImage))
                         {
-                            System.IO.File.Delete(oldimg);
+                            System.IO.File.Delete(oldImage);
                         }
                     }
-                    using (var fileStream = new FileStream(Path.Combine(Upload, filename + extention), FileMode.Create))
+                    using (var fileStream = new FileStream(Path.Combine(uploadPath, filename + extension), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
                     }
-                    Productvm.Product.Image = @"Dashboard\Images\Products\" + filename + extention;
+                    productVM.Product.Image = @"Dashboard\Images\Products\" + filename + extension;
                 }
-                _unitOfWork.Product.Update(Productvm.Product);
+
+                _unitOfWork.Product.Update(productVM.Product);
+
+                // Retrieve existing color mappings for the product
+                var existingColorMappings = _context.ProductColorMappings
+                    .Where(pcm => pcm.ProductId == productVM.Product.Id)
+                    .ToList();
+                // Retrieve existing Size mappings for the product
+                var existingSizeMappings = _context.ProductSizeMappings
+                    .Where(pcm => pcm.ProductId == productVM.Product.Id)
+                    .ToList();
+
+                // Remove mappings that are not in the selected colors
+                var removedMappingsColor = existingColorMappings
+                    .Where(pcm => !productVM.SelectedColors.Contains(pcm.ProductColorId))
+                    .ToList();
+                // Remove mappings that are not in the selected Sizes
+                var removedMappingsSize = existingSizeMappings
+                    .Where(pcm => !productVM.SelectedSizes.Contains(pcm.ProductSizeId))
+                    .ToList();
+
+                _context.ProductColorMappings.RemoveRange(removedMappingsColor);
+                _context.ProductSizeMappings.RemoveRange(removedMappingsSize);
+
+                // Add or update mappings based on the selected colors
+                foreach (var colorId in productVM.SelectedColors)
+                {
+                    var existingMapping = existingColorMappings
+                        .FirstOrDefault(pcm => pcm.ProductColorId == colorId);
+
+                    if (existingMapping == null)
+                    {
+                        // Add new mapping if it doesn't exist
+                        var newMapping = new ProductColorMapping
+                        {
+                            ProductId = productVM.Product.Id,
+                            ProductColorId = colorId
+                        };
+                        _context.ProductColorMappings.Add(newMapping);
+                    }
+                    // If it exists, no need to update since it's already present
+                }
+
+
+                // Add or update mappings based on the selected Sizes
+                foreach (var sizeId in productVM.SelectedSizes)
+                {
+                    var existingMapping = existingSizeMappings
+                        .FirstOrDefault(pcm => pcm.ProductSizeId == sizeId);
+
+                    if (existingMapping == null)
+                    {
+                        // Add new mapping if it doesn't exist
+                        var newMapping = new ProductSizeMapping
+                        {
+                            ProductId = productVM.Product.Id,
+                            ProductSizeId = sizeId
+                        };
+                        _context.ProductSizeMappings.Add(newMapping);
+                    }
+                    // If it exists, no need to update since it's already present
+                }
                 _unitOfWork.Complete();
+
                 TempData["Update"] = "Product Has been Updated Successfully";
                 return RedirectToAction("Index");
             }
-            return View(Productvm.Product);
+            return View(productVM.Product);
         }
+
         [HttpDelete]
         public IActionResult DeleteProduct(int? Id)
         {
