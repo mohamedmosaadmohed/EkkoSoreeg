@@ -30,7 +30,7 @@ namespace EkkoSoreeg.Web.ViewComponents
 
             var shoppingCartVM = new ShoppingCartVM()
             {
-                shoppingCarts = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product"),
+                shoppingCarts = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product,Product.ProductImages"),
                 totalCarts = 0
             };
 

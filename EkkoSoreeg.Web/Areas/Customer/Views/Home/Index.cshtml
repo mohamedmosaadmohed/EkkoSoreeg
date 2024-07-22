@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<Product>
+@{
+	var productsToDisplay = Model.Take(6);
+}
 <!-- Slider -->
 <partial name="_Toaster"/>
 <section class="section-slide">
@@ -382,16 +385,29 @@
 		</div>
 
 		<div class="row isotope-grid">
-			@foreach(var item in Model)
+			@foreach (var item in productsToDisplay)
 			{
 				<a href="/Customer/Home/Details/@item.Id">
 					<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
 						<div class="block2">
-							<div class="block2-pic hov-img0">
-								<img src="~/@item.Image" alt="IMG-PRODUCT">
-								<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-									Quick View
-								</a>
+							<div class="block2-pic hov-img0 position-relative">
+								@if (item.OfferPrice != 0)
+								{
+									<div class="badge-badge">Offer</div>
+								}
+								<img src="~/@item.ProductImages.First().ImagePath" alt="IMG-PRODUCT">
+								@if (item.StockType == false)
+								{
+									<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
+										Add to cart
+									</a>
+								}
+								else
+								{
+									<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
+										Out Of Stock
+									</a>
+								}
 							</div>
 
 							<div class="block2-txt flex-w flex-t p-t-14">
@@ -399,10 +415,22 @@
 									<a href="/Customer/Home/Details/@item.Id" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
 										@item.Name
 									</a>
+									@if (item.OfferPrice != 0)
+									{
+										<span class="stext-105 cl3">
+											EGP <del>@item.Price</del>
+										</span>
+										<span class="stext-105 cl3">
+											EGP @item.OfferPrice
+										</span>
+									}
+									else
+									{
+										<span class="stext-105 cl3">
+											EGP @item.Price
+										</span>
+									}
 
-									<span class="stext-105 cl3">
-										£@item.Price
-									</span>
 								</div>
 
 								<div class="block2-txt-child2 flex-r p-t-3">
@@ -418,6 +446,7 @@
 			}
 		</div>
 
+
 		<!-- Load more -->
 		<div class="flex-c-m flex-w w-full p-t-45">
 			<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
@@ -426,3 +455,21 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	.block2-pic {
+		position: relative;
+	}
+
+	.badge-badge {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		background-color: #f74877;
+		color: white;
+		padding: 5px 10px;
+		font-size: 12px;
+		font-weight: bold;
+		border-radius: 5px;
+	}
+</style>

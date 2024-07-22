@@ -20,6 +20,8 @@ namespace EkkoSoreeg.Entities.Models
 		public Product product { get; set; }
         public int Count { get; set; }
         public decimal price { get; set; }
+        public string Color { get; set; }
+        public string Size { get; set; }
 
     }
 }

@@ -5,15 +5,14 @@ using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using static System.Net.WebRequestMethods;
 
 namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 {
 
-    [Area("Customer")]
-    [Authorize]
-    public class CartController : Controller
-    {
+	[Area("Customer")]
+	[Authorize]
+	public class CartController : Controller
+	{
 		private readonly IUnitOfWork _unitOfWork;
 		public ShoppingCartVM shoppingCartVM { get; set; }
 		public CartController(IUnitOfWork unitOfWork)
@@ -26,7 +25,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 			shoppingCartVM = new ShoppingCartVM()
 			{
-				shoppingCarts = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product")
+				shoppingCarts = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product,Product.ProductImages")
 			};
 			foreach (var item in shoppingCartVM.shoppingCarts)
 			{
@@ -48,7 +47,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			if (shoppingCart.Count <= 1)
 			{
 				_unitOfWork.ShoppingCart.Remove(shoppingCart);
-				var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count() -1;
+				var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count() - 1;
 				HttpContext.Session.SetInt32(SD.SessionKey, count);
 			}
 			_unitOfWork.ShoppingCart.decreaseCount(shoppingCart, 1);
@@ -86,14 +85,13 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			shoppingCartVM.OrderHeader.Region = shoppingCartVM.OrderHeader.applicationUser.Region;
 			shoppingCartVM.OrderHeader.City = shoppingCartVM.OrderHeader.applicationUser.City;
 
-
 			foreach (var item in shoppingCartVM.shoppingCarts)
 			{
 				shoppingCartVM.OrderHeader.totalPrice += (item.Count * item.Product.Price);
 			}
 			shoppingCartVM.totalCartsWithShipping = shoppingCartVM.OrderHeader.totalPrice + 50;
 
-            return View(shoppingCartVM);
+			return View(shoppingCartVM);
 		}
 		[HttpPost]
 		[ActionName("Checkout")]
@@ -126,7 +124,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			}
 			shoppingCartvm.OrderHeader.totalPrice = shoppingCartvm.OrderHeader.totalPrice + 50;
 
-            _unitOfWork.OrderHeader.Add(shoppingCartvm.OrderHeader);
+			_unitOfWork.OrderHeader.Add(shoppingCartvm.OrderHeader);
 			_unitOfWork.Complete();
 
 			foreach (var item in shoppingCartvm.shoppingCarts)
@@ -137,14 +135,16 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 					OrderHeaderId = shoppingCartvm.OrderHeader.Id,
 					price = item.Product.Price,
 					Count = item.Count,
+					Color = item.Color,
+					Size = item.Size,
 				};
 				_unitOfWork.OrderDetails.Add(orderDetails);
 				_unitOfWork.Complete();
 			}
 			_unitOfWork.ShoppingCart.RemoveRange(shoppingCartvm.shoppingCarts);
 			_unitOfWork.Complete();
-            TempData["Order"] = "Thank you for Placed Order";
-            return RedirectToAction("Index", "Home");
+			TempData["Order"] = "Thank you for Placed Order";
+			return RedirectToAction("Index", "Home");
 		}
 	}
 }

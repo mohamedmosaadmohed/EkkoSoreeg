@@ -17,12 +17,12 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		}
 		public IActionResult Index()
 		{
-			var products = _unitOfWork.Product.GetAll();
+			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages");
 			return View(products);
 		}
 		public IActionResult Details(int id)
 		{
-			var product = _unitOfWork.Product.GetFirstorDefault(X => X.Id == id, IncludeWord: "TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize");
+			var product = _unitOfWork.Product.GetFirstorDefault(X => X.Id == id, IncludeWord: "TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize,ProductImages");
 			var relatedProducts = _unitOfWork.Product.GetAll(x => x.TbCatagory.Name == product.TbCatagory.Name && x.Id != id);
 			ShoppingCart obj = new ShoppingCart()
 			{

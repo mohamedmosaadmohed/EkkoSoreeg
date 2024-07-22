@@ -19,6 +19,8 @@ namespace EkkoSoreeg.Entities.Models
         public Product Product { get; set; }
         [Range(1, 20, ErrorMessage = "Count Must be between 1 to 20")]
         public int Count { get; set; }
+        public string Color { get; set; }
+        public string Size { get; set; }
         public string ApplicationUserId  { get; set; }
         [ForeignKey("ApplicationUserId")]
         [ValidateNever]

@@ -10,6 +10,6 @@ namespace EkkoSoreeg.Entities.ViewModels
     public class OrderVM
     {
         public OrderHeader orderHeader { get; set; }
-        public IEnumerable<OrderDetails> orderDetails { get; set; }
+        public List<OrderDetails> orderDetails { get; set; }
     }
 }

@@ -15,73 +15,73 @@
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">FirstName</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="firstname" name="orderHeader.FirstName" asp-for="orderHeader.FirstName">
+                                <input type="text" class="form-control" id="firstname" asp-for="orderHeader.FirstName">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Lastname</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="lastname" name="orderHeader.LastName" asp-for="orderHeader.LastName">
+                                <input type="text" class="form-control" id="lastname" asp-for="orderHeader.LastName">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">PhoneNumber</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="phone" name="orderHeader.PhoneNumber" asp-for="orderHeader.PhoneNumber">
+                                <input type="text" class="form-control" id="phone" asp-for="orderHeader.PhoneNumber">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Additional Phone</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="additionalphonenumber" name="orderHeader.AdditionalPhoneNumber" asp-for="orderHeader.AdditionalPhoneNumber">
+                                <input type="text" class="form-control" id="additionalphonenumber" asp-for="orderHeader.AdditionalPhoneNumber">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Address</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="address" name="orderHeader.Address" asp-for="orderHeader.Address">
+                                <input type="text" class="form-control" id="address" asp-for="orderHeader.Address">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Noties</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="additionalinformation" name="orderHeader.AdditionalInformation" asp-for="orderHeader.AdditionalInformation">
+                                <input type="text" class="form-control" id="additionalinformation" asp-for="orderHeader.AdditionalInformation">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Region</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="region" name="orderHeader.Region" asp-for="orderHeader.Region">
+                                <input type="text" class="form-control" id="region" asp-for="orderHeader.Region">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">City</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="city" name="orderHeader.City" asp-for="orderHeader.City">
+                                <input type="text" class="form-control" id="city" asp-for="orderHeader.City">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Email</label>
                             <div class="col-sm-10">
-                                <input type="text" disabled class="form-control" id="email" name="orderHeader.Email" asp-for="orderHeader.Email">
+                                <input type="text" disabled class="form-control" id="email" asp-for="orderHeader.Email">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Order Date</label>
                             <div class="col-sm-10">
-                                <input value="@Model.orderHeader.orderDate.ToShortDateString()" disabled type="text" class="form-control" id="orderDate" name="orderDate">
+                                <input value="@Model.orderHeader.orderDate.ToShortDateString()" disabled type="text" class="form-control" id="orderDate">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Carrier</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="carrier" name="orderHeader.Carrier" asp-for="orderHeader.Carrier">
+                                <input type="text" class="form-control" id="carrier" asp-for="orderHeader.Carrier">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Tracking Number</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="trackingNumber" name="orderHeader.TrackingNumber" asp-for="orderHeader.TrackingNumber">
+                                <input type="text" class="form-control" id="trackingNumber" asp-for="orderHeader.TrackingNumber">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -93,11 +93,11 @@
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Payment Status</label>
                             <div class="col-sm-10">
-                                <input disabled type="text" class="form-control" id="paymentStatus" name="orderHeader.paymentStatus" asp-for="orderHeader.paymentStatus">
+                                <input disabled type="text" class="form-control" id="paymentStatus" asp-for="orderHeader.paymentStatus">
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="inputText" class="col-sm-2 col-form-label">Payment Date</label>
+                            <label for="inputText" class="col-sm-2 col-form-label">Color</label>
                             <div class="col-sm-10">
                                 <input disabled value="@Model.orderHeader.paymentDate.ToShortDateString()" type="text" class="form-control" id="paymentDate" name="paymentDate">
                             </div>
@@ -111,32 +111,44 @@
                     <div class="card-body">
                         <h5 class="card-title">Order Summary</h5>
                         <label class="btn btn-outline-primary form-control mb-4">Order Status - @Model.orderHeader.orderStatus</label>
-                        @foreach (var item in Model.orderDetails)
+                        @for (int i = 0; i < Model.orderDetails.Count; i++)
                         {
                             <ul class="list-group mb-3">
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Name</strong>
-                                    <strong>@item.product.Name</strong>
+                                    <strong>@Model.orderDetails[i].product.Name</strong>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Price</strong>
-                                    <strong>£ @item.product.Price</strong>
+                                    <strong>EGP @Model.orderDetails[i].product.Price</strong>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Count</strong>
-                                    <strong>@item.Count</strong>
+                                    <strong>@Model.orderDetails[i].Count</strong>
                                 </li>
+                                <li class="list-group-item">
+                                    <strong>Color</strong>
+                                    <input type="text" class="form-control" name="orderDetails[@i].Color" value="@Model.orderDetails[i].Color" />
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Size</strong>
+                                    <input type="text" class="form-control" name="orderDetails[@i].Size" value="@Model.orderDetails[i].Size" />
+                                </li>
+                                <!-- Ensure there's a hidden input for the ID to bind properly -->
+                                <input type="hidden" name="orderDetails[@i].Id" value="@Model.orderDetails[i].Id" />
                             </ul>
                             <hr />
                         }
+                        <input type="submit" asp-action="OnPostUpdateOrderDetails" class="btn btn-primary btn-block" value="Update Details" />
+                        <hr />
                         <ul class="list-group mb-3">
                             <li class="list-group-item d-flex justify-content-between">
                                 <strong>Shipping fee:</strong>
-                                <strong style="color:#717FE0">£ 50</strong>
+                                <strong style="color:#717FE0">EGP 50</strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <strong>Total (EGP)</strong>
-                                <strong style="color:#717FE0">£ @Model.orderHeader.totalPrice</strong>
+                                <strong style="color:#717FE0">EGP @Model.orderHeader.totalPrice</strong>
                             </li>
                         </ul>
                         @if (Model.orderHeader.orderStatus == SD.Pending)
@@ -145,7 +157,7 @@
                         }
                         @if (Model.orderHeader.orderStatus == SD.Approve)
                         {
-                            <input type="submit" class="btn btn-Secondary m-1" onclick="return CheckData()" asp-action="StartShipping" name="action" value="StartShipping" />
+                            <input type="submit" class="btn btn-secondary m-1" onclick="return CheckData()" asp-action="StartShipping" name="action" value="StartShipping" />
                         }
                         @if (Model.orderHeader.orderStatus != SD.Cancelled && Model.orderHeader.orderStatus != SD.Refund)
                         {
@@ -161,6 +173,7 @@
         </div>
     </section>
 </form>
+
 
 
 

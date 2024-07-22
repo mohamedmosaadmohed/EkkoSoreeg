@@ -37,11 +37,11 @@
 									<tr class="table_row">
 										<td class="column-1">
 											<div class="how-itemcart1">
-												<img src="~/@item.Product.Image" alt="IMG">
+												<img src="~/@item.Product.ProductImages.First().ImagePath" alt="IMG">
 											</div>
 										</td>
 										<td class="column-2">@item.Product.Name</td>
-										<td class="column-3">£ @item.Product.Price</td>
+										<td class="column-3">EGP @item.Product.Price</td>
 										<td class="column-4">
 											<div class="wrap-num-product flex-w m-l-auto m-r-0">
 												<a asp-action="Minus" asp-route-cartid="@item.shoppingId" class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">

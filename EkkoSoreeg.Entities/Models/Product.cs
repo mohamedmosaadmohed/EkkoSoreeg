@@ -35,5 +35,7 @@ namespace EkkoSoreeg.Entities.Models
         public ICollection<ProductColorMapping> ProductColorMappings { get; set; }
         [ValidateNever]
         public ICollection<ProductSizeMapping> ProductSizeMappings { get; set; }
+        [ValidateNever]
+        public ICollection<ProductImage> ProductImages { get; set; }
     }
 }

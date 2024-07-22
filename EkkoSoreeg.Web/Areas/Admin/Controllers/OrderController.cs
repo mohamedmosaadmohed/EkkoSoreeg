@@ -33,12 +33,12 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             OrderHeaders = _unitOfWork.OrderHeader.GetAll(IncludeWord: "applicationUser");
             return Json(new { data = OrderHeaders });
         }
-        public IActionResult Details(int orderid)
+        public IActionResult Details(int orderId)
         {
             OrderVM orderVM = new OrderVM()
             {
-                orderHeader = _unitOfWork.OrderHeader.GetFirstorDefault(X => X.Id == orderid, IncludeWord: "applicationUser"),
-                orderDetails = _unitOfWork.OrderDetails.GetAll(X => X.OrderHeaderId == orderid, IncludeWord: "product"),
+                orderHeader = _unitOfWork.OrderHeader.GetFirstorDefault(x => x.Id == orderId, IncludeWord: "applicationUser"),
+                orderDetails = _unitOfWork.OrderDetails.GetAll(x => x.OrderHeaderId == orderId, IncludeWord: "product").ToList(),
             };
 
             return View(orderVM);
@@ -120,7 +120,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             TempData["Update"] = "Order Has been Closed";
             return RedirectToAction("Details", "Order", new { orderid = OrderVM.orderHeader.Id });
         }
-
         public IActionResult DownloadExcelSheet()
         {
             IEnumerable<OrderHeader> OrderHeaders;
@@ -161,7 +160,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
 
                         foreach (var details in orderDetails)
                         {
-                            productContent += $"{details.product.Name}, {details.product.Price:C}\n";
+                            productContent += $"{details.product.Name}, {details.Color}, {details.Size}, {details.product.Price:C}\n";
                             orderQuantity += $"{details.Count:N0}\n";
                         }
                         worksheet.Cells[row, 6].Value = productContent.TrimEnd('\r', '\n');
@@ -187,6 +186,22 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        public IActionResult OnPostUpdateOrderDetails()
+        {
+            foreach (var detail in OrderVM.orderDetails)
+            {
+                var orderDetailFromDb = _unitOfWork.OrderDetails.GetFirstorDefault(od => od.Id == detail.Id);
+                if (orderDetailFromDb != null)
+                {
+                    orderDetailFromDb.Color = detail.Color;
+                    orderDetailFromDb.Size = detail.Size;
+                    _unitOfWork.OrderDetails.Update(orderDetailFromDb);
+                }
+            }
+            _unitOfWork.Complete();
+            return RedirectToAction("Details", "Order", new { orderid = OrderVM.orderHeader.Id });
         }
     }
 }
