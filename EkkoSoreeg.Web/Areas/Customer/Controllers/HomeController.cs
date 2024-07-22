@@ -22,7 +22,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		}
 		public IActionResult Details(int id)
 		{
-			var product = _unitOfWork.Product.GetFirstorDefault(X => X.Id == id, IncludeWord: "TbCatagory");
+			var product = _unitOfWork.Product.GetFirstorDefault(X => X.Id == id, IncludeWord: "TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize");
 			var relatedProducts = _unitOfWork.Product.GetAll(x => x.TbCatagory.Name == product.TbCatagory.Name && x.Id != id);
 			ShoppingCart obj = new ShoppingCart()
 			{

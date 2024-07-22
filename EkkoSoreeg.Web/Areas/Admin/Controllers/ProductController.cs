@@ -82,35 +82,40 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                string rootPath = _webHostEnvironment.WebRootPath;
-                List<string> imagePaths = new List<string>();
-
-                if (files != null && files.Count > 0)
-                {
-                    foreach (var file in files)
-                    {
-                        string filename = Guid.NewGuid().ToString();
-                        var uploadPath = Path.Combine(rootPath, @"Dashboard\Images\Products");
-                        var extension = Path.GetExtension(file.FileName);
-                        var filePath = Path.Combine(uploadPath, filename + extension);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        imagePaths.Add(@"Dashboard\Images\Products\" + filename + extension);
-                    }
-
-                    // Store the first image as the main product image
-                    productVM.Product.Image = imagePaths.First();
-                }
-
                 // Add product
+                productVM.Product.Image = "didkdk";
                 _unitOfWork.Product.Add(productVM.Product);
                 _unitOfWork.Complete();
+                // Add Image in Folder
+				string rootPath = _webHostEnvironment.WebRootPath;
+				List<string> imagePaths = new List<string>();
+				if (files != null && files.Count > 0)
+				{
+					// Create a unique folder for the product
+					string productFolder = Path.Combine(rootPath, @"Dashboard\Images\Products", productVM.Product.Id.ToString());
+					if (!Directory.Exists(productFolder))
+					{
+						Directory.CreateDirectory(productFolder);
+					}
 
+					foreach (var file in files)
+					{
+						string filename = Guid.NewGuid().ToString();
+						var extension = Path.GetExtension(file.FileName);
+						var filePath = Path.Combine(productFolder, filename + extension);
+
+						using (var fileStream = new FileStream(filePath, FileMode.Create))
+						{
+							file.CopyTo(fileStream);
+						}
+
+						// Save relative path to database
+						string relativePath = Path.Combine(@"Dashboard\Images\Products", productVM.Product.Id.ToString(), filename + extension);
+						imagePaths.Add(relativePath);
+					}
+				}
                 // Add product image mappings
-                foreach (var imagePath in imagePaths.Skip(1))
+                foreach (var imagePath in imagePaths)
                 {
                     var productImage = new ProductImage
                     {
@@ -130,7 +135,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     };
                    await _context.ProductColorMappings.AddAsync(productColorMapping);
                 }
-
                 // Add selected sizes
                 foreach (var sizeId in SelectedSizes)
                 {
@@ -141,12 +145,12 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     };
                     await _context.ProductSizeMappings.AddAsync(productSizeMapping);
                 }
-
                 _unitOfWork.Complete();
                 TempData["Create"] = "Product Has been Created Successfully";
                 return RedirectToAction("Index");
             }
-            return View(productVM);
+			TempData["Delete"] = "Faild to Create";
+			return View(productVM);
         }
         [HttpGet]
         public IActionResult Update(int? id)

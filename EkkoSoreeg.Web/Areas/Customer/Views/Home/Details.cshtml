@@ -126,7 +126,7 @@
 						</h4>
 
 						<span class="mtext-106 cl2">
-							£@Model.Product.Price
+							EGP @Model.Product.Price
 						</span>
 
 						<p class="stext-102 cl3 p-t-23">
@@ -142,17 +142,36 @@
 
 								<div class="size-204 respon6-next">
 									<div class="rs1-select2 bor8 bg0">
-										<select class="js-select2" name="time">
-											<option>Choose an option</option>
-											<option>Size S</option>
-											<option>Size M</option>
-											<option>Size L</option>
-											<option>Size XL</option>
-										</select>
+									<select class="js-select2" name="size">
+										<option selected>Select Size</option>
+										@foreach (var size in Model.Product.ProductSizeMappings.Select(p => p.ProductSize))
+										{
+											<option value="@size.Id">@size.Name</option>
+										}
+									</select>
 										<div class="dropDownSelect2"></div>
 									</div>
 								</div>
 							</div>
+
+						<div class="flex-w flex-r-m p-b-10">
+							<div class="size-203 flex-c-m respon6">
+								Color
+							</div>
+
+							<div class="size-204 respon6-next">
+								<div class="rs1-select2 bor8 bg0">
+									<select class="js-select2" name="color">
+										<option selected>Select Color</option>
+										@foreach (var color in Model.Product.ProductColorMappings.Select(p => p.ProductColor))
+										{
+											<option value="@color.Id">@color.Name</option>
+										}
+									</select>
+									<div class="dropDownSelect2"></div>
+								</div>
+							</div>
+						</div>
 							<div class="flex-w flex-r-m p-b-10">
 								<div class="size-204 flex-w flex-m respon6-next">
 									<div class="wrap-num-product flex-w m-r-20 m-tb-10">
