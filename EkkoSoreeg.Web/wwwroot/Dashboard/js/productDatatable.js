@@ -17,12 +17,6 @@ function loaddata() {
         "columns": [
             { "data": "name" },
             { "data": "stock" },
-            {
-                "data": "stockType",
-                "render": function (data) {
-                    return data ? 'Out of Stock':'In Stock';
-                }
-            },
             { "data": "price" },
             { "data": "createDate" },
             { "data": "tbCatagory.name" },

@@ -24,7 +24,6 @@ namespace EkkoSoreeg.Entities.Models
         public decimal OfferPrice { get; set; }
         [Required]
         public int Stock { get; set; }
-        public bool StockType { get; set; }
         public int SaleNumber { get; set; }
         public DateTime CreateDate { get; set; } = DateTime.Now;
         [Required]

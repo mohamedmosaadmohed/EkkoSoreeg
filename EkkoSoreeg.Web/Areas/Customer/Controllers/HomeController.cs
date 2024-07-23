@@ -43,6 +43,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			shoppingCart.ApplicationUserId = claim.Value;
 			ShoppingCart cartObj = _unitOfWork.ShoppingCart.GetFirstorDefault(
 				U => U.ApplicationUserId == claim.Value && U.ProductId == shoppingCart.ProductId
+				&& U.Color == shoppingCart.Color && U.Size == shoppingCart.Size
 			);
 			if (cartObj == null)
 			{

@@ -121,7 +121,7 @@
 											<i class="fs-16 zmdi zmdi-plus"></i>
 										</div>
 									</div>
-								@if(Model.Product.StockType == false)
+								@if(Model.Product.Stock != 0)
 								{
 									<button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15" onclick="submitForm()">
 										Add to cart
@@ -141,7 +141,8 @@
 						<input type="hidden" id="ProductCount" name="Count" />
 						<input type="hidden" id="SelectedSize" name="Size" />
 						<input type="hidden" id="SelectedColor" name="Color" />
-						<button type="button" onclick="submitForm()">Add to Cart</button>
+						<span asp-validation-for="Color" class="text-danger"></span>
+						<span asp-validation-for="Size" class="text-danger"></span>
 					</form>
 						<!--  -->
 						<div class="flex-w flex-m p-l-100 p-t-40 respon7">
@@ -453,6 +454,7 @@
 			document.getElementById("SelectedColor").value = selectedColorText;
 		});
 	</script>
+	<partial name="_ValidationScriptsPartial" />
 }
 
 

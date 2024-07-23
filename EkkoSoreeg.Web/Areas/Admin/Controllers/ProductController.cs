@@ -32,7 +32,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 p.Id,
                 p.Name,
                 p.Stock,
-                p.StockType,
                 p.Price,
                 p.OfferPrice,
                 p.CreateDate,
@@ -84,7 +83,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             {
                 // Add product
                 productVM.Product.Image = "didkdk";
-                _unitOfWork.Product.Add(productVM.Product);
+				_unitOfWork.Product.Add(productVM.Product);
                 _unitOfWork.Complete();
                 // Add Image in Folder
 				string rootPath = _webHostEnvironment.WebRootPath;
@@ -195,7 +194,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                string rootPath = _webHostEnvironment.WebRootPath;
+				string rootPath = _webHostEnvironment.WebRootPath;
                 if (file != null)
                 {
                     string filename = Guid.NewGuid().ToString();
@@ -215,7 +214,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     }
                     productVM.Product.Image = @"Dashboard\Images\Products\" + filename + extension;
                 }
-
                 _unitOfWork.Product.Update(productVM.Product);
 
                 // Retrieve existing color mappings for the product
