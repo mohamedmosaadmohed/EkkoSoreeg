@@ -1,6 +1,7 @@
 ﻿using EkkoSoreeg.Entities.Repositories;
 using EkkoSoreeg.Entities.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using X.PagedList.Extensions;
 
 namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 {
@@ -14,11 +15,14 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index(string searchQuery, string category, string sortBy, string color, decimal? minPrice, decimal? maxPrice)
+        public IActionResult Index(int? page, string searchQuery, string category, string sortBy, string color, decimal? minPrice, decimal? maxPrice)
         {
+            var pageNumber = page ?? 1;
+            int pageSize = 8;
+
             var products = _unitOfWork.Product.GetAll(IncludeWord: "TbCatagory,ProductImages,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize");
             var categories = _unitOfWork.Catagory.GetAll();
-            var Colors = _unitOfWork.Color.GetAll();
+            var colors = _unitOfWork.Color.GetAll();
 
             // Search query filter
             if (!string.IsNullOrEmpty(searchQuery))
@@ -48,6 +52,8 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
             {
                 products = products.Where(p => p.Price <= maxPrice.Value);
             }
+
+            // Sorting
             switch (sortBy)
             {
                 case "Offers":
@@ -62,13 +68,20 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
                 case "PriceHighToLow":
                     products = products.OrderByDescending(p => p.Price);
                     break;
+                default:
+                    products = products.OrderBy(p => p.Id);
+                    break;
             }
+
+            // Pagination
+            var pagedProducts = products.ToPagedList(pageNumber, pageSize);
+
             var viewModel = new ShopViewModel
             {
-                Products = products.ToList(),
+                Products = pagedProducts,
                 Categories = categories.ToList(),
-                Colors = Colors.ToList(),
-                SelectedCategory = category
+                Colors = colors.ToList(),
+                SelectedCategory = category,
             };
 
             return View(viewModel);

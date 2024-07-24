@@ -1,4 +1,6 @@
 ﻿@model ShopViewModel
+@using X.PagedList.Mvc.Core
+@using X.PagedList
 <section class="txt-center p-lr-15 p-t-80">
 	<h2 class="ltext-105 cl0 txt-center" style="color:#333">
 		Shop
@@ -180,9 +182,12 @@
 
         <!-- Load more -->
         <div class="flex-c-m flex-w w-full p-t-45">
-            <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-                Load More
-            </a>
+            @Html.PagedListPager((IPagedList)Model.Products, page => Url.Action("Index", new { page = page }),
+                     new PagedListRenderOptions
+            {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" }
+            })
         </div>
     </div>
 </div>

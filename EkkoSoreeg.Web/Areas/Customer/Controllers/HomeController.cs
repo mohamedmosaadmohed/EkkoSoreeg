@@ -4,6 +4,7 @@ using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using X.PagedList.Extensions;
 
 namespace EkkoSoreeg.Areas.Customer.Controllers
 {
@@ -15,9 +16,11 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		{
 			_unitOfWork = unitOfWork;
 		}
-		public IActionResult Index()
+		public IActionResult Index(int ? page)
 		{
-			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages");
+			var pageNumber = page ?? 1;
+			int pageSize = 6;
+			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages").ToPagedList(pageNumber,pageSize);
 			return View(products);
 		}
 		public IActionResult Details(int id)
