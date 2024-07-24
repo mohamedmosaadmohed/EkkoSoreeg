@@ -29,14 +29,14 @@ function loaddata() {
             {
                 "data": "id",
                 "render": function (data) {
-                    return `<a href="/Admin/Product/Update/${data}" class="btn btn-primary"><i class="fas fa-edit"></i></a>`;
+                    return `<a href="/Admin/Product/Update/${data}" class="btn btn-primary"><i class="bi bi-pencil-square"></i></a>`;
                 },
                 "orderable": false
             },
             {
                 "data": "id",
                 "render": function (data) {
-                    return `<a onClick="DeleteItem('/Admin/Product/DeleteProduct/${data}')" class="btn btn-danger"><i class="fas fa-trash"></i></a>`;
+                    return `<a onClick="DeleteItem('/Admin/Product/DeleteProduct/${data}')" class="btn btn-danger"><i class="bi bi-trash"></i></a>`;
                 },
                 "orderable": false
             }

@@ -27,7 +27,7 @@ function loaddata() {
             {
                 "data": "id",
                 "render": function (data) {
-                    return `<a href="/Admin/Order/Details?orderid=${data}" class="btn btn-secondary"><i class="fa fa-info-circle"></i></a>`;
+                    return `<a href="/Admin/Order/Details?orderid=${data}" class="btn btn-secondary"><i class="bi bi-info-circle"></i></a>`;
                 },
                 "orderable": false
             },
@@ -36,10 +36,10 @@ function loaddata() {
 
                 "render": function (data,type,row) {
                     if (data == false) {
-                        return `<a href="/Admin/Order/downloader?orderid=${row.id}" class="btn btn-danger"><i class="fas fa-times"></i></a>`;
+                        return `<a href="/Admin/Order/downloader?orderid=${row.id}" class="btn btn-danger"><i class="bi bi-bag-x-fill"></i></a>`;
                     }
                     else {
-                        return `<a href="/Admin/Order/downloader?orderid=${row.id}" class="btn btn-success"><i class="fas fa-check"></i></a>`;
+                        return `<a href="/Admin/Order/downloader?orderid=${row.id}" class="btn btn-success"><i class="bi bi-bag-check-fill"></i></a>`;
                     }
                 },
                 "orderable": false

@@ -1,0 +1,227 @@
+﻿@model ShopViewModel
+<section class="txt-center p-lr-15 p-t-80">
+	<h2 class="ltext-105 cl0 txt-center" style="color:#333">
+		Shop
+	</h2>
+</section>
+
+<div class="bg0 m-t-24 p-b-140">
+    <div class="container">
+        <form method="get" asp-action="Index" asp-controller="Shop">
+            <div class="flex-w flex-sb-m p-b-52">
+                <div class="flex-w flex-l-m filter-tope-group m-tb-10">
+                    <button type="submit" name="category" value="All" class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 @(ViewData["SelectedCategory"]?.ToString() == "All" ? "how-active1" : "")">
+                        All Products
+                    </button>
+                    @foreach (var item in Model.Categories)
+                    {
+                        <button type="submit" name="category" value="@item.Name" class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 @(Model.SelectedCategory == item.Name ? "how-active1" : "")">
+                            @item.Name
+                        </button>
+                    }
+                </div>
+
+                <div class="flex-w flex-c-m m-tb-10">
+                    <div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
+                        <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
+                        <i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                        Filter
+                    </div>
+
+                    <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
+                        <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
+                        <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                        Search
+                    </div>
+                </div>
+
+                <!-- Search product -->
+                <div class="dis-none panel-search w-full p-t-10 p-b-15">
+                    <div class="bor8 dis-flex p-l-15">
+                        <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+                            <i class="zmdi zmdi-search"></i>
+                        </button>
+                        <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchQuery" placeholder="Search">
+                    </div>
+                </div>
+
+                <!-- Filter -->
+                <div class="dis-none panel-filter w-full p-t-10">
+                    <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
+                        <div class="filter-col1 p-r-15 p-b-27">
+                            <div class="mtext-102 cl2 p-b-15">
+                                Sort By
+                            </div>
+                            <ul>
+                                <li class="p-b-6">
+                                    <button type="submit" name="sortBy" value="Offers" class="filter-link stext-106 trans-04">
+                                        Offers
+                                    </button>
+                                </li>
+                                <li class="p-b-6">
+                                    <button type="submit" name="sortBy" value="Newness" class="filter-link stext-106 trans-04 filter-link-active">
+                                        Newness
+                                    </button>
+                                </li>
+                                <li class="p-b-6">
+                                    <button type="submit" name="sortBy" value="PriceLowToHigh" class="filter-link stext-106 trans-04">
+                                        Price: Low to High
+                                    </button>
+                                </li>
+                                <li class="p-b-6">
+                                    <button type="submit" name="sortBy" value="PriceHighToLow" class="filter-link stext-106 trans-04">
+                                        Price: High to Low
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="filter-col2 p-r-15 p-b-27">
+                            <div class="mtext-102 cl2 p-b-15">
+                                Price
+                            </div>
+                            <ul>
+                                <li class="p-b-6">
+                                    <button type="submit" name="minPrice" value="" class="filter-link stext-106 trans-04 filter-link-active">
+                                        All
+                                    </button>
+                                </li>
+                                <li class="p-b-6">
+                                    <button type="submit" name="minPrice" value="350" class="filter-link stext-106 trans-04">
+                                        EGP 350 - EGP 500
+                                    </button>
+                                </li>
+                                <li class="p-b-6">
+                                    <button type="submit" name="minPrice" value="500" class="filter-link stext-106 trans-04">
+                                        EGP 500 - EGP 750
+                                    </button>
+                                </li>
+                                <li class="p-b-6">
+                                    <button type="submit" name="minPrice" value="750" class="filter-link stext-106 trans-04">
+                                        EGP 750+
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="filter-col3 p-r-15 p-b-27">
+                            <div class="mtext-102 cl2 p-b-15">
+                                Color
+                            </div>
+                            <ul>
+                                @foreach(var item in Model.Colors)
+                                {
+                                    <li class="p-b-6">
+                                        <button type="submit" name="color" value="@item.Name" class="filter-link stext-106 trans-04">
+                                            @item.Name
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row isotope-grid">
+            @foreach (var item in Model.Products)
+            {
+                <a href="/Customer/Home/Details/@item.Id">
+                    <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
+                        <div class="block2">
+                            <div class="block2-pic hov-img0 position-relative">
+                                @if (item.Stock == 0)
+                                {
+                                    <div class="outofstock">
+                                        <p>OUT OF STOCK</p>
+                                    </div>
+                                }
+                                else if (item.OfferPrice != 0)
+                                {
+                                    <div class="badge-badge">Offer</div>
+                                }
+                                <img src="~/@item.ProductImages.First().ImagePath" alt="IMG-PRODUCT">
+                                <a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
+                                    Quick View
+                                </a>
+                            </div>
+                            <div class="block2-txt flex-w flex-t p-t-14">
+                                <div class="block2-txt-child1 flex-col-l">
+                                    <a href="/Customer/Home/Details/@item.Id" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                        @item.Name
+                                    </a>
+                                    @if (item.OfferPrice != 0)
+                                    {
+                                        <span class="stext-105 cl3">
+                                            EGP <del>@item.Price</del>
+                                        </span>
+                                        <span class="stext-105 cl3">
+                                            EGP @item.OfferPrice
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="stext-105 cl3">
+                                            EGP @item.Price
+                                        </span>
+                                    }
+
+                                </div>
+                                <div class="block2-txt-child2 flex-r p-t-3">
+                                    <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+                                        <img class="icon-heart1 dis-block trans-04" src="~/Customer/images/icons/icon-heart-01.png" alt="ICON">
+                                        <img class="icon-heart2 dis-block trans-04 ab-t-l" src="~/Customer/images/icons/icon-heart-02.png" alt="ICON">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+
+        <!-- Load more -->
+        <div class="flex-c-m flex-w w-full p-t-45">
+            <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+                Load More
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<style>
+	.block2-pic {
+		position: relative;
+		display: inline-block;
+	}
+
+	.badge-badge {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		background-color: #f74877;
+		color: white;
+		padding: 5px 10px;
+		font-size: 12px;
+		font-weight: bold;
+		border-radius: 5px;
+	}
+
+	.outofstock {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: rgba(255, 255, 255, 0.7);
+		padding: 10px 20px;
+		z-index: 1;
+		display: block;
+		width: 100%;
+	}
+
+		.outofstock p {
+			color: #000;
+			font-size: 20px;
+			font-weight: bold;
+			text-align: center;
+		}
+</style>
