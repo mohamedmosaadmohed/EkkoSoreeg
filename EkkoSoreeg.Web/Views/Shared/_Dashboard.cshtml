@@ -235,7 +235,7 @@
         <ul class="sidebar-nav" id="sidebar-nav">
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="index.html">
+                <a class="nav-link collapsed" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                     <i class="bi bi-grid"></i>
                     <span>Dashboard</span>
                 </a>
@@ -284,7 +284,7 @@
             <h1>@ViewBag.pageTitle</h1>
             <nav>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li class="breadcrumb-item">Pages</li>
                     <li class="breadcrumb-item active">@ViewBag.CardTitle</li>
                 </ol>
@@ -297,10 +297,10 @@
     <!-- ======= Footer ======= -->
     <footer id="footer" class="footer">
         <div class="copyright">
-            &copy; Copyright <strong><span>BrightByte</span></strong>. All Rights Reserved
+            &copy; Copyright <strong><span>Byte</span></strong>. All Rights Reserved
         </div>
         <div class="credits">
-            Designed by <a href="https://bootstrapmade.com/">Eng Mohamed Mosaad</a>
+            Designed by <a href="#">Eng Mohamed Mosaad</a>
         </div>
     </footer><!-- End Footer -->
 
@@ -308,6 +308,10 @@
 
     <!-- Vendor JS Files -->
     <script src="~/Dashboard/bootstrap/Js/bootstrap.bundle.min.js"></script>
+    <script src="~/Dashboard/js/apexcharts.min.js"></script>
+    <script src="~/Dashboard/js/chart.umd.js"></script>
+
+
     <!-- Template Main JS File -->
     <script src="~/Dashboard/js/main.js"></script>
     <!--SweetAlert-->
