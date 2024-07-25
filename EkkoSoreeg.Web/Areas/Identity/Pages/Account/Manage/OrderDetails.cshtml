@@ -17,7 +17,7 @@
         @foreach (var detail in Model.OrderDetails)
         {
             <li>
-                <img src="~/@detail.product.Image" alt="Product Image" width="100" height="100" />
+                <img src="~/@detail.product.ProductImages.First().ImagePath" alt="Product Image" width="100" height="100" />
                 <p>Name: @detail.product.Name</p>
                 <p>Price: @detail.product.Price EGP</p>
                 <p>Quantity: @detail.Count</p>

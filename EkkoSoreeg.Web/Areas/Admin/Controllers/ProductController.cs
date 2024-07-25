@@ -82,7 +82,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 // Add product
-                productVM.Product.Image = "didkdk";
+
 				_unitOfWork.Product.Add(productVM.Product);
                 _unitOfWork.Complete();
                 // Add Image in Folder
@@ -200,9 +200,9 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     string filename = Guid.NewGuid().ToString();
                     var uploadPath = Path.Combine(rootPath, @"Dashboard\Images\Products");
                     var extension = Path.GetExtension(file.FileName);
-                    if (productVM.Product.Image != null)
+                    if (productVM.Product.ProductImages.First().ImagePath != null)
                     {
-                        var oldImage = Path.Combine(rootPath, productVM.Product.Image.TrimStart('\\'));
+                        var oldImage = Path.Combine(rootPath, productVM.Product.ProductImages.First().ImagePath.TrimStart('\\'));
                         if (System.IO.File.Exists(oldImage))
                         {
                             System.IO.File.Delete(oldImage);
@@ -212,7 +212,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-                    productVM.Product.Image = @"Dashboard\Images\Products\" + filename + extension;
+                    productVM.Product.ProductImages.First().ImagePath = @"Dashboard\Images\Products\" + filename + extension;
                 }
                 _unitOfWork.Product.Update(productVM.Product);
 
@@ -282,7 +282,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             }
             return View(productVM.Product);
         }
-
         [HttpDelete]
         public IActionResult DeleteProduct(int? Id)
         {
@@ -290,7 +289,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             if (item == null)
                 return Json(new { success = false, message = "Error While Deleting" });
             _unitOfWork.Product.Remove(item);
-            var oldimg = Path.Combine(_webHostEnvironment.WebRootPath, item.Image.TrimStart('\\'));
+            var oldimg = Path.Combine(_webHostEnvironment.WebRootPath, item.ProductImages.First().ImagePath.TrimStart('\\'));
             if (System.IO.File.Exists(oldimg))
             {
                 System.IO.File.Delete(oldimg);

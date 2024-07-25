@@ -28,7 +28,6 @@ namespace EkkoSoreeg.DataAccess.Implementation
                 productInDb.Price = product.Price;
                 productInDb.OfferPrice = product.OfferPrice;
                 productInDb.Stock = product.Stock;
-                productInDb.Image = product.Image;
                 productInDb.CatagoryId = product.CatagoryId;
                 productInDb.CreateDate = DateTime.Now;
             }

@@ -17,8 +17,6 @@ namespace EkkoSoreeg.Entities.Models
         public string Name { get; set; }
         [MaxLength(2000)]
         public string Description { get; set; }
-        [ValidateNever]
-        public string Image { get; set; }
         [Required]
         public decimal Price { get; set; }
         public decimal OfferPrice { get; set; }

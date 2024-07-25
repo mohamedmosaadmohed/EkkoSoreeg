@@ -29,7 +29,7 @@
                                     {
                                         var orderDetails = Model.OrderDetails.Where(d => d.OrderHeaderId == order.Id);
                                         <div class="order-item">
-                                            <img src="~/@orderDetails.First().product.Image" alt="Product Image" />
+                                            <img src="~/@orderDetails.First().product.ProductImages.First().ImagePath" alt="Product Image" />
                                             <div class="order-details">
                                                 <h5>@orderDetails.First().product.Name</h5>
                                                 <p>@orderDetails.First().product.Price EGP</p>
@@ -71,7 +71,7 @@
                                     {
                                         var orderDetails = Model.OrderDetails.Where(d => d.OrderHeaderId == order.Id);
                                         <div class="order-item">
-                                            <img src="~/@orderDetails.First().product.Image" alt="Product Image" />
+                                            <img src="~/@orderDetails.First().product.ProductImages.First().ImagePath" alt="Product Image" />
                                             <div class="order-details">
                                                 <h5>@orderDetails.First().product.Name</h5>
                                                 <p>@orderDetails.First().product.Price EGP</p>
