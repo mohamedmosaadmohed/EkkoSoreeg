@@ -19,13 +19,11 @@ namespace EkkoSoreeg.DataAccess.Implementation
 
         public void Update(ProductSize productSize)
         {
-            //var catagoryInDb = _context.TbCatagory.FirstOrDefault(x => x.Id == catagory.Id);
-            //if(catagoryInDb != null)
-            //{
-            //    catagoryInDb.Name = catagory.Name;
-            //    catagoryInDb.Description = catagory.Description;
-            //    catagoryInDb.CreateDate = DateTime.Now;
-            //}
+            var sizeInDb = _context.TbProductSizes.FirstOrDefault(x => x.Id == productSize.Id);
+            if (sizeInDb != null)
+            {
+				sizeInDb.Name = productSize.Name;
+            }
         }
     }
 }

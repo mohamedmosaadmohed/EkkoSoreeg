@@ -19,13 +19,11 @@ namespace EkkoSoreeg.DataAccess.Implementation
 
         public void Update(ProductColor productColor)
         {
-            //var catagoryInDb = _context.TbCatagory.FirstOrDefault(x => x.Id == catagory.Id);
-            //if(catagoryInDb != null)
-            //{
-            //    catagoryInDb.Name = catagory.Name;
-            //    catagoryInDb.Description = catagory.Description;
-            //    catagoryInDb.CreateDate = DateTime.Now;
-            //}
+            var colorInDb = _context.TbProductColors.FirstOrDefault(x => x.Id == productColor.Id);
+            if(colorInDb != null)
+            {
+				colorInDb.Name = productColor.Name;
+            }
         }
     }
 }
