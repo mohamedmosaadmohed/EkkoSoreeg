@@ -4,24 +4,124 @@
 @{
     ViewData["Title"] = "Order Details";
 }
+<section class="py-4">
+    <div class="container px-2 px-lg-5 mt-5">
+        <div class="row">
+           <div class="container order-details-page">
+                <h2 class="page-title">Order Details</h2>
+                <hr />
+                @if (Model.OrderHeader != null && Model.OrderDetails != null && Model.OrderDetails.Any())
+                {
+                    <div class="order-summary card mb-3">
+                        <div class="card-header">
+                            <h3>Order Number: @Model.OrderHeader.Id</h3>
+                            <p>Count: @Model.OrderDetails.First().Count</p>
+                            <p>Order Date: @Model.OrderHeader.orderDate.ToShortDateString()</p>
+                        </div>
+                        <div class="order-details-page">
+                            <div class="order-summary">
+                                <div class="product-details">
+                                    <div class="product-image">
+                                        <img src="~/@Model.OrderDetails.First().product.ProductImages.First().ImagePath" alt="Product Image" class="img-fluid" />
+                                    </div>
+                                    <div class="product-info pl-2">
+                                        <h5 class="product-name">@Model.OrderDetails.First().product.Name</h5>
+                                        <p class="product-price">@Model.OrderDetails.First().product.Price EGP</p>
+                                        <p class="product-quantity">Quantity: @Model.OrderDetails.First().Count</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="shipping-payment-info row">
+                            <div class="shipping-info col-md-6 mb-3">
+                                <h4 class="mb-1">Delivery Information</h4>
+                                <hr />
+                                <table class="table">
+                                    <tr>
+                                        <td>Delivery Method</td>
+                                        <td>Cash on Delivery</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Delivery Address</td>
+                                        <td>@Model.OrderHeader.Address,<br>@Model.OrderHeader.Region,<br>@Model.OrderHeader.City</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="payment-info col-md-6 mb-3">
+                                <h4 class="mb-1">Payment Information</h4>
+                                <hr />
+                                <table class="table">
+                                    <tr>
+                                        <td>Payment Method</td>
+                                        <td>Cash on Delivery</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Products</td>
+                                        <td>@Model.OrderDetails.First().price EGP</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Shipping Cost</td>
+                                        <td>50 EGP</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total</td>
+                                        <td>@Model.OrderHeader.totalPrice EGP</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>Order details not found.</p>
+                }
+            </div>
+        </div>
+    </div>
+</section>
 
-<h2>Order Details</h2>
+<style>
+    .order-details-page {
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
 
-<div>
-    <h4>To: @Model.OrderHeader.FirstName @Model.OrderHeader.LastName</h4>
-    <p>Order Date: @Model.OrderHeader.orderDate.ToShortDateString()</p>
-    <p>Status: @Model.OrderHeader.orderStatus</p>
+    .page-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
 
-    <h4>Products</h4>
-    <ul>
-        @foreach (var detail in Model.OrderDetails)
-        {
-            <li>
-                <img src="~/@detail.product.ProductImages.First().ImagePath" alt="Product Image" width="100" height="100" />
-                <p>Name: @detail.product.Name</p>
-                <p>Price: @detail.product.Price EGP</p>
-                <p>Quantity: @detail.Count</p>
-            </li>
-        }
-    </ul>
-</div>
+    .order-summary {
+        background-color: #eaeaea;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    .product-details {
+        display: flex;
+        align-items: center;
+    }
+
+    .product-image img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-right: 20px;
+    }
+
+    .product-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .shipping-payment-info {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .shipping-info, .payment-info {
+        width: 100%;
+    }
+</style>

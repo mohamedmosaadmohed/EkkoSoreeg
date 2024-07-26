@@ -22,7 +22,7 @@ namespace EkkoSoreeg.Web.Pages.Orders
         public void OnGet(int id)
         {
             OrderHeader = _unitOfWork.OrderHeader.GetFirstorDefault(o => o.Id == id);
-            OrderDetails = _unitOfWork.OrderDetails.GetAll(d => d.OrderHeaderId == id, IncludeWord: "product");
+            OrderDetails = _unitOfWork.OrderDetails.GetAll(d => d.OrderHeaderId == id, IncludeWord: "product,product.ProductImages");
         }
     }
 }

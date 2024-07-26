@@ -36,7 +36,7 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account.Manage
             OrderHeaders = _unitOfWork.OrderHeader.GetAll(o => o.ApplicationUserId == claim.Value);
 
             var orderHeaderIds = OrderHeaders.Select(o => o.Id);
-            OrderDetails = _unitOfWork.OrderDetails.GetAll(d => orderHeaderIds.Contains(d.OrderHeaderId), IncludeWord: "product");
+            OrderDetails = _unitOfWork.OrderDetails.GetAll(d => orderHeaderIds.Contains(d.OrderHeaderId), IncludeWord: "product,product.ProductImages");
         }
     }
 }

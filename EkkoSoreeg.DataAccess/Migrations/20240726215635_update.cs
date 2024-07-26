@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EkkoSoreeg.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class djdj : Migration
+    public partial class update : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -264,20 +264,34 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductImages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductSizeMappings",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    ProductColorId = table.Column<int>(type: "int", nullable: false)
+                    ProductSizeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProductSizeMappings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductSizeMappings_TbProductSizes_ProductColorId",
-                        column: x => x.ProductColorId,
+                        name: "FK_ProductSizeMappings_TbProductSizes_ProductSizeId",
+                        column: x => x.ProductSizeId,
                         principalTable: "TbProductSizes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -292,7 +306,9 @@ namespace EkkoSoreeg.DataAccess.Migrations
                     OrderHeaderId = table.Column<int>(type: "int", nullable: false),
                     productId = table.Column<int>(type: "int", nullable: false),
                     Count = table.Column<int>(type: "int", nullable: false),
-                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Size = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -313,11 +329,9 @@ namespace EkkoSoreeg.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     OfferPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
-                    StockType = table.Column<bool>(type: "bit", nullable: false),
                     SaleNumber = table.Column<int>(type: "int", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CatagoryId = table.Column<int>(type: "int", nullable: false),
@@ -342,6 +356,8 @@ namespace EkkoSoreeg.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     Count = table.Column<int>(type: "int", nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Size = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -411,14 +427,19 @@ namespace EkkoSoreeg.DataAccess.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductSizeMappings_ProductColorId",
-                table: "ProductSizeMappings",
-                column: "ProductColorId");
+                name: "IX_ProductImages_ProductId",
+                table: "ProductImages",
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductSizeMappings_ProductId",
                 table: "ProductSizeMappings",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductSizeMappings_ProductSizeId",
+                table: "ProductSizeMappings",
+                column: "ProductSizeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TbOrderDetails_OrderHeaderId",
@@ -458,6 +479,14 @@ namespace EkkoSoreeg.DataAccess.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_ProductColorMappings_TbProduct_ProductId",
                 table: "ProductColorMappings",
+                column: "ProductId",
+                principalTable: "TbProduct",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ProductImages_TbProduct_ProductId",
+                table: "ProductImages",
                 column: "ProductId",
                 principalTable: "TbProduct",
                 principalColumn: "Id",
@@ -515,6 +544,9 @@ namespace EkkoSoreeg.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProductColorMappings");
+
+            migrationBuilder.DropTable(
+                name: "ProductImages");
 
             migrationBuilder.DropTable(
                 name: "ProductSizeMappings");

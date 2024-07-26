@@ -39,7 +39,18 @@ namespace EkkoSoreeg.Web.DataSeed
                 };
                 await userManager.CreateAsync(adminUser, "Admin@12");
                 await userManager.AddToRoleAsync(adminUser, SD.AdminRole);
+
+                // Generate email confirmation token and confirm email
+                var token = await userManager.GenerateEmailConfirmationTokenAsync(adminUser);
+                await userManager.ConfirmEmailAsync(adminUser, token);
+            }
+            else if (!await userManager.IsEmailConfirmedAsync(adminUser))
+            {
+                // Confirm the email if it is not already confirmed
+                var token = await userManager.GenerateEmailConfirmationTokenAsync(adminUser);
+                await userManager.ConfirmEmailAsync(adminUser, token);
             }
         }
     }
+
 }
