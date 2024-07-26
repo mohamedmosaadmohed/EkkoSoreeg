@@ -25,13 +25,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(4);
+    options.SignIn.RequireConfirmedAccount = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders()
 .AddDefaultUI();
 
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IEmailSender>(provider => new EmailSender(
+        email: "mohamedmohenaish343@gmail.com",
+        password: "ibch tlur soud pvmh",
+        host: "smtp.gmail.com",
+        ssl: true,
+        port: 587,
+        isBodyHtml: true
+    ));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Set the EPPlus license context to NonCommercial
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
