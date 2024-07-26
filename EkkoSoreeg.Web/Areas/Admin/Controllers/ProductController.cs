@@ -43,9 +43,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
 
             return Json(new { data = productList });
         }
-
-
-
         public IActionResult Index()
         {
             var Product = _unitOfWork.Product.GetAll();
@@ -196,7 +193,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Update(ProductVM productVM, IFormFile[] files)
+        public async Task<IActionResult> Update(ProductVM productVM, IFormFile[] files)
         {
             if (ModelState.IsValid)
             {
@@ -213,7 +210,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     }
                 }
                 _context.ProductImages.RemoveRange(existingImages);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 // Upload new images
                 if (files != null && files.Length > 0)
@@ -245,10 +242,10 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                                 ProductId = productVM.Product.Id,
                                 ImagePath = $"Dashboard\\Images\\Products\\{productVM.Product.Id.ToString()}\\" + filename + extension
                             };
-                            _context.ProductImages.Add(newImage);
+                           await _context.ProductImages.AddAsync(newImage);
                         }
                     }
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
                 _unitOfWork.Product.Update(productVM.Product);
                 
@@ -394,20 +391,68 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         }
 
         [HttpDelete]
-        public IActionResult DeleteProduct(int? Id)
+        public async Task<IActionResult> DeleteProduct(int? Id)
         {
             var item = _unitOfWork.Product.GetFirstorDefault(x => x.Id == Id);
             if (item == null)
                 return Json(new { success = false, message = "Error While Deleting" });
+
+            // Remove the product from the database
             _unitOfWork.Product.Remove(item);
-            var oldimg = Path.Combine(_webHostEnvironment.WebRootPath, item.ProductImages.First().ImagePath.TrimStart('\\'));
-            if (System.IO.File.Exists(oldimg))
-            {
-                System.IO.File.Delete(oldimg);
-            }
             _unitOfWork.Complete();
-            //TempData["Delete"] = "Product Has been Deleted Successfully"; // (Toaster)
-            return Json(new { success = true, message = "Product Has been Deleted Successfully" }); // (Sweetalert)
+
+            string rootPath = _webHostEnvironment.WebRootPath;
+            var productImagePath = Path.Combine(rootPath, $"Dashboard\\Images\\Products\\{Id}");
+
+            // Delete all images associated with the product
+            var existingImages = _context.ProductImages.Where(img => img.ProductId == Id).ToList();
+            foreach (var image in existingImages)
+            {
+                var imagePath = Path.Combine(rootPath, image.ImagePath.TrimStart('\\'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
+            // Remove image records from the database
+            _context.ProductImages.RemoveRange(existingImages);
+            await _context.SaveChangesAsync();
+
+            // Delete all files in the product's directory
+            if (Directory.Exists(productImagePath))
+            {
+                var files = Directory.GetFiles(productImagePath);
+                foreach (var file in files)
+                {
+                    System.IO.File.Delete(file);
+                }
+                Directory.Delete(productImagePath); // Delete the directory if it's empty
+            }
+
+            return Json(new { success = true, message = "Product Has been Deleted Successfully" });
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteImage(int ? imageId,int productId)
+        {
+            var productImage = await _context.ProductImages.FindAsync(imageId);
+            if (productImage == null)
+                return Json(new { success = false, message = "Error While Deleting" });
+            string rootPath = _webHostEnvironment.WebRootPath;
+            var uploadPath = Path.Combine(rootPath, $"Dashboard\\Images\\Products\\{productId}");
+
+            // Delete the image if it exists
+            if (!string.IsNullOrEmpty(productImage.ImagePath))
+            {
+                var ImagePath = Path.Combine(rootPath, productImage.ImagePath.TrimStart('\\'));
+                if (System.IO.File.Exists(ImagePath))
+                {
+                    System.IO.File.Delete(ImagePath);
+                }
+            }
+            _context.ProductImages.Remove(productImage);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "Product Has been Deleted Successfully" });
         }
 
     }

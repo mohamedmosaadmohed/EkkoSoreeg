@@ -119,7 +119,7 @@
                     <button type="button" class="edit-icon" onclick="triggerFileInput('@item.Value')">
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button type="button" class="trash-icon" onclick="triggerFileInput('@item.Value')">
+                    <button type="button" class="trash-icon" onclick="confirmDeleteImage('@item.Value', '@Model.Product.Id')">
                         <i class="bi bi-trash"></i>
                     </button>
                     <form id="editForm-@item.Value" method="post" asp-action="UpdateImage" enctype="multipart/form-data" style="display:none;">
@@ -162,6 +162,54 @@
                 alert("Please select a file to upload.");
             }
         }
+
+        function confirmDeleteImage(imageId, productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteImage(imageId, productId);
+                }
+            });
+        }
+
+        function deleteImage(imageId, productId) {
+            $.ajax({
+                url: '@Url.Action("DeleteImage", "Product")',
+                type: 'POST',
+                data: { imageId: imageId, productId: productId },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire(
+                            'Deleted!',
+                            response.message,
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            'There was an issue deleting the image.',
+                            'error'
+                        );
+                    }
+                },
+                error: function () {
+                    Swal.fire(
+                        'Error!',
+                        'There was an issue deleting the image.',
+                        'error'
+                    );
+                }
+            });
+        }
     </script>
 }
 <style>
@@ -191,5 +239,17 @@
         display: block;
         width: 300px;
         height: 300px;
+    }
+
+    .trash-icon{
+        position: absolute;
+        top: 10px;
+        right: 40px;
+        color: #fff;
+        background-color: #cb2d2d;
+        padding: 5px;
+        border-radius: 50%;
+        cursor: pointer;
+        text-decoration: none;
     }
 </style>
