@@ -5,14 +5,13 @@
 }
 <section class="section">
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-10">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">@ViewBag.CardTitle</h5>
                     <!-- General Form Elements -->
                     <form method="post" asp-action="Update" enctype="multipart/form-data">
                         <input type="hidden" asp-for="@Model.Product.Id" />
-                        <input type="hidden" asp-for="@Model.Product.ProductImages.First().ImagePath" />
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Name</label>
                             <div class="col-sm-10">
@@ -48,9 +47,9 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="inputNumber" class="col-sm-2 col-form-label">Image</label>
+                            <label for="inputNumber" class="col-sm-2 col-form-label">Images</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="file" name="file" id="imagefile" />
+                                <input class="form-control" type="file" name="files" id="imagefiles" multiple />
                             </div>
                         </div>
 
@@ -100,12 +99,97 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <img src="~/@Model.Product.ProductImages.First().ImagePath" width="300" height="300" />
-        </div>
+    </div>
+    <!-- Form to upload new images -->
+    <form method="post" asp-action="AddImages" enctype="multipart/form-data" id="addImagesForm">
+        <input type="hidden" name="productId" value="@Model.Product.Id" />
+        <input type="file" name="files" id="fileInput" multiple style="display:none;" onchange="submitAddImagesForm()" />
+        <button type="button" class="btn btn-primary mb-3" onclick="triggerFileInput()">
+            <i class="bi bi-plus"></i>
+        </button>
+        <div id="fileNames" class="mt-2"></div>
+    </form>
+
+    <div class="row">
+        @foreach (var item in Model.ImageList)
+        {
+            <div class="col-lg-3">
+                <div class="image-container">
+                    <img src="~/@item.Text" class="img-fluid" />
+                    <button type="button" class="edit-icon" onclick="triggerFileInput('@item.Value')">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button type="button" class="trash-icon" onclick="triggerFileInput('@item.Value')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <form id="editForm-@item.Value" method="post" asp-action="UpdateImage" enctype="multipart/form-data" style="display:none;">
+                        <input type="hidden" name="imageId" value="@item.Value" />
+                        <input type="hidden" name="productId" value="@Model.Product.Id" />
+                        <input type="file" name="file" accept="image/*" id="fileInput-@item.Value" style="display:none;" onchange="submitEditForm('@item.Value')" />
+                    </form>
+                </div>
+            </div>
+        }
     </div>
 </section>
 
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function triggerFileInput() {
+            document.getElementById('fileInput').click();
+        }
+
+        function submitAddImagesForm() {
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput.files.length > 0) {
+                document.getElementById('addImagesForm').submit();
+            } else {
+                alert("Please select files to upload.");
+            }
+        }
+
+        function triggerFileInputForEdit(imageId) {
+            document.getElementById('fileInput-' + imageId).click();
+        }
+
+        function submitEditForm(imageId) {
+            const fileInput = document.getElementById('fileInput-' + imageId);
+            if (fileInput.files.length > 0) {
+                document.getElementById('editForm-' + imageId).submit();
+            } else {
+                alert("Please select a file to upload.");
+            }
+        }
+    </script>
 }
+<style>
+    .image-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .edit-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 5px;
+        border-radius: 50%;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+        .edit-icon:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+    .image-container img {
+        display: block;
+        width: 300px;
+        height: 300px;
+    }
+</style>

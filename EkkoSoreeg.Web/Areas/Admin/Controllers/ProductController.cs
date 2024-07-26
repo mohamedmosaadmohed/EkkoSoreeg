@@ -7,6 +7,7 @@ using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using EkkoSoreeg.DataAccess.Data;
 using System.Drawing;
+using Microsoft.CodeAnalysis;
 
 namespace EkkoSoreeg.Areas.Admin.Controllers
 {
@@ -183,6 +184,11 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     Text = X.Name,
                     Value = X.Id.ToString()
                 }),
+                ImageList = _context.ProductImages.Select(X => new SelectListItem
+                {
+                    Text = X.ImagePath,
+                    Value = X.Id.ToString()
+                }),
                 SelectedColors = selectedColors,
                 SelectedSizes = selectedSizes
             };
@@ -190,31 +196,62 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Update(ProductVM productVM, IFormFile? file)
+        public IActionResult Update(ProductVM productVM, IFormFile[] files)
         {
             if (ModelState.IsValid)
             {
-				string rootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                string rootPath = _webHostEnvironment.WebRootPath;
+
+                // Remove all existing images for the product
+                var existingImages = _context.ProductImages.Where(img => img.ProductId == productVM.Product.Id).ToList();
+                foreach (var image in existingImages)
                 {
-                    string filename = Guid.NewGuid().ToString();
-                    var uploadPath = Path.Combine(rootPath, @"Dashboard\Images\Products");
-                    var extension = Path.GetExtension(file.FileName);
-                    if (productVM.Product.ProductImages.First().ImagePath != null)
+                    var imagePath = Path.Combine(rootPath, image.ImagePath.TrimStart('\\'));
+                    if (System.IO.File.Exists(imagePath))
                     {
-                        var oldImage = Path.Combine(rootPath, productVM.Product.ProductImages.First().ImagePath.TrimStart('\\'));
-                        if (System.IO.File.Exists(oldImage))
+                        System.IO.File.Delete(imagePath);
+                    }
+                }
+                _context.ProductImages.RemoveRange(existingImages);
+                _context.SaveChanges();
+
+                // Upload new images
+                if (files != null && files.Length > 0)
+                {
+                    foreach (var file in files)
+                    {
+                        if (file.Length > 0)
                         {
-                            System.IO.File.Delete(oldImage);
+                            string filename = Guid.NewGuid().ToString();
+                            var uploadPath = Path.Combine(rootPath, $"Dashboard\\Images\\Products\\{productVM.Product.Id.ToString()}");
+                            var extension = Path.GetExtension(file.FileName);
+
+                            // Create directory if it doesn't exist
+                            if (!Directory.Exists(uploadPath))
+                            {
+                                Directory.CreateDirectory(uploadPath);
+                            }
+
+                            // Save the new image
+                            var filePath = Path.Combine(uploadPath, filename + extension);
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                file.CopyTo(fileStream);
+                            }
+
+                            // Add image record to the database
+                            var newImage = new ProductImage
+                            {
+                                ProductId = productVM.Product.Id,
+                                ImagePath = $"Dashboard\\Images\\Products\\{productVM.Product.Id.ToString()}\\" + filename + extension
+                            };
+                            _context.ProductImages.Add(newImage);
                         }
                     }
-                    using (var fileStream = new FileStream(Path.Combine(uploadPath, filename + extension), FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-                    productVM.Product.ProductImages.First().ImagePath = @"Dashboard\Images\Products\" + filename + extension;
+                    _context.SaveChanges();
                 }
                 _unitOfWork.Product.Update(productVM.Product);
+                
 
                 // Retrieve existing color mappings for the product
                 var existingColorMappings = _context.ProductColorMappings
@@ -256,7 +293,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     // If it exists, no need to update since it's already present
                 }
 
-
                 // Add or update mappings based on the selected Sizes
                 foreach (var sizeId in productVM.SelectedSizes)
                 {
@@ -280,8 +316,83 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 TempData["Update"] = "Product Has been Updated Successfully";
                 return RedirectToAction("Index");
             }
-            return View(productVM.Product);
+            return View(productVM);
         }
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public IActionResult UpdateImage(int? imageId ,int productId, IFormFile file)
+        {
+            string rootPath = _webHostEnvironment.WebRootPath;
+            if (file != null)
+            {
+                var productImage = _context.ProductImages.Find(imageId);
+                if (productImage != null)
+                {
+                    string filename = Guid.NewGuid().ToString();
+                    var uploadPath = Path.Combine(rootPath, $"Dashboard\\Images\\Products\\{productId}");
+                    var extension = Path.GetExtension(file.FileName);
+
+                    // Delete the old image if it exists
+                    if (!string.IsNullOrEmpty(productImage.ImagePath))
+                    {
+                        var oldImagePath = Path.Combine(rootPath, productImage.ImagePath.TrimStart('\\'));
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    // Save the new image
+                    using (var fileStream = new FileStream(Path.Combine(uploadPath, filename + extension), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+
+                    productImage.ImagePath = $"Dashboard\\Images\\Products\\{productId}\\" + filename + extension;
+                    _context.SaveChanges();
+
+                    TempData["Update"] = "Product image has been updated successfully";
+                }
+            }
+            return  RedirectToAction("Update", "Product", new { id = productId });
+        }
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public IActionResult AddImages(int productId, IFormFile[] files)
+        {
+            string rootPath = _webHostEnvironment.WebRootPath;
+            var uploadPath = Path.Combine(rootPath, $"Dashboard\\Images\\Products\\{productId}");
+
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            foreach (var file in files)
+            {
+                if (file != null && file.Length > 0)
+                {
+                    string filename = Guid.NewGuid().ToString();
+                    var extension = Path.GetExtension(file.FileName);
+
+                    // Save the new image
+                    using (var fileStream = new FileStream(Path.Combine(uploadPath, filename + extension), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    var productImage = new ProductImage
+                    {
+                        ProductId = productId,
+                        ImagePath = $"Dashboard\\Images\\Products\\{productId}\\{filename}{extension}"
+                    };
+                    _context.ProductImages.Add(productImage);
+                }
+            }
+            _context.SaveChanges();
+            TempData["Update"] = "Images have been added successfully";
+            return RedirectToAction("Update", new { id = productId });
+        }
+
         [HttpDelete]
         public IActionResult DeleteProduct(int? Id)
         {
