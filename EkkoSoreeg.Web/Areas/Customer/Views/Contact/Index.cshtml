@@ -1,36 +1,42 @@
-﻿	<!-- Title page -->
+﻿@model Contact
+
 <section class="txt-center p-lr-15 p-t-80">
 	<h2 class="ltext-105 cl0 txt-center" style="color:#333">
 		Contact
 	</h2>
 </section>
 
-
+<partial name="_Toaster" />
 <!-- Content page -->
 <section class="bg0 m-t-24 p-b-140">
 	<div class="container">
 		<div class="flex-w flex-tr">
 			<div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
-				<form>
+				<form method="post" asp-action="SendContact">
 					<h4 class="mtext-105 cl2 txt-center p-b-30">
-						Send Us A Message
+						GET IN TOUCH WITH US
 					</h4>
-
 					<div class="bor8 m-b-20 how-pos4-parent">
-						<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="email" placeholder="Your Email Address">
-						<img class="how-pos4 pointer-none" src="~/Customer/images/icons/icon-email.png" alt="ICON">
+						<input asp-for="Name" class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" placeholder="Your Name (required)">
+						<i class="lnr lnr-user how-pos4 pointer-none"></i>
 					</div>
-
+					<div class="bor8 m-b-20 how-pos4-parent">
+						<input asp-for="Phone" class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" placeholder="Your Phone (required)">
+						<i class="lnr lnr-phone-handset how-pos4 pointer-none"></i>
+					</div>
+					<div class="bor8 m-b-20 how-pos4-parent">
+						<input asp-for="Email" class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" placeholder="Your Email Address (required)">
+						<i class="lnr lnr-envelope how-pos4 pointer-none"></i>
+					</div>
 					<div class="bor8 m-b-30">
-						<textarea class="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25" name="msg" placeholder="How Can We Help?"></textarea>
+						<textarea asp-for="Message" class="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25" placeholder="How Can We Help?"></textarea>
 					</div>
-
-					<button class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer" style="color:#fff;">
+					<button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer" style="color:#fff;">
 						Submit
 					</button>
 				</form>
-			</div>
 
+			</div>
 			<div class="size-210 bor10 flex-w flex-col-m p-lr-93 p-tb-30 p-lr-15-lg w-full-md">
 				<div class="flex-w w-full p-b-42">
 					<span class="fs-18 cl5 txt-center size-211">
@@ -43,7 +49,7 @@
 						</span>
 
 						<p class="stext-115 cl6 size-213 p-t-18">
-							الشيخ زايد - الحي الثالث - مجاوره الثانيه -  عماره 66 ب - الدور الأرضي شقه 1
+							Sheikh Zayed - Third District - Second Neighborhood - Building 66 B - Ground Floor 1
 						</p>
 					</div>
 				</div>
@@ -59,9 +65,9 @@
 						</span>
 
 						<p class="stext-115 cl1 size-213 p-t-18">
-							+20 1004958040<br>
-							+20 1012378600<br>
-							+20 1096017304
+							 01004958040<br>
+							 01012378600<br>
+							 01096017304
 						</p>
 					</div>
 				</div>
@@ -84,4 +90,4 @@
 			</div>
 		</div>
 	</div>
-</section>	
+</section>
