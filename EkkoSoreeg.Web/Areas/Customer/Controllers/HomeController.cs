@@ -44,6 +44,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		[Authorize]
 		public IActionResult Details(ShoppingCart shoppingCart)
 		{
+			var ProductFromDb = _unitOfWork.Product.GetFirstorDefault(X => X.Id == shoppingCart.ProductId);
 			var claimsIdentity = (ClaimsIdentity)User.Identity;
 			var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 			shoppingCart.ApplicationUserId = claim.Value;
@@ -51,6 +52,11 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 				U => U.ApplicationUserId == claim.Value && U.ProductId == shoppingCart.ProductId
 				&& U.Color == shoppingCart.Color && U.Size == shoppingCart.Size
 			);
+			shoppingCart.Product = ProductFromDb;
+			if (ProductFromDb.OfferPrice != 0)
+			{
+				shoppingCart.Product.Price = shoppingCart.Product.OfferPrice;
+			}
 			if (cartObj == null)
 			{
 				_unitOfWork.ShoppingCart.Add(shoppingCart);

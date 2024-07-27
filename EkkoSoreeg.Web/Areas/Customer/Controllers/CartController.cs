@@ -122,7 +122,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			{
 				shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.Price);
 			}
-			shoppingCartvm.OrderHeader.totalPrice = shoppingCartvm.OrderHeader.totalPrice + 50;
+			shoppingCartvm.totalCartsWithShipping = shoppingCartvm.OrderHeader.totalPrice + 50;
 
 			_unitOfWork.OrderHeader.Add(shoppingCartvm.OrderHeader);
 			_unitOfWork.Complete();
@@ -143,7 +143,9 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			}
 			_unitOfWork.ShoppingCart.RemoveRange(shoppingCartvm.shoppingCarts);
 			_unitOfWork.Complete();
-			TempData["Order"] = "Thank you for Placed Order";
+            HttpContext.Session.SetInt32(SD.SessionKey,
+               _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == claim.Value).ToList().Count());
+            TempData["Order"] = "Thank you for Placed Order";
 			return RedirectToAction("Index", "Home");
 		}
 	}

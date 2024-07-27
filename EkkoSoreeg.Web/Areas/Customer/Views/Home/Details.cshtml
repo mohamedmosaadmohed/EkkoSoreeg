@@ -512,11 +512,20 @@
 	<script>
 		function submitForm(event) {
 			event.preventDefault();
-			const selectedSize = document.getElementById('selectSize').value;
-			const selectedColor = document.getElementById('selectColor').value;
+
+			// Get the select elements
+			const sizeSelect = document.getElementById('selectSize');
+			const colorSelect = document.getElementById('selectColor');
+
+			// Get the selected option text
+			const selectedSizeText = sizeSelect.options[sizeSelect.selectedIndex].text;
+			const selectedColorText = colorSelect.options[colorSelect.selectedIndex].text;
+
+			// Get the product count
 			const productCount = document.querySelector('.num-product').value;
 
-			if (!selectedSize) {
+			// Validation checks
+			if (!selectedSizeText) {
 				Swal.fire({
 					icon: 'error',
 					title: 'Error',
@@ -525,7 +534,7 @@
 				return;
 			}
 
-			if (!selectedColor) {
+			if (!selectedColorText) {
 				Swal.fire({
 					icon: 'error',
 					title: 'Error',
@@ -534,10 +543,14 @@
 				return;
 			}
 
-			document.getElementById('SelectedSize').value = selectedSize;
-			document.getElementById('SelectedColor').value = selectedColor;
+			// Set hidden input values to the selected option text
+			document.getElementById('SelectedSize').value = selectedSizeText;
+			document.getElementById('SelectedColor').value = selectedColorText;
 			document.getElementById('ProductCount').value = productCount;
+
+			// Submit the form
 			document.getElementById('Details').submit();
 		}
 	</script>
+
 }

@@ -93,11 +93,15 @@
                                 <div>
                                     <h6 class="my-0">@item.Product.Name (@item.Count)</h6>
                                 </div>
-                                <span class="text-muted">EGP @Model.OrderHeader.totalPrice</span>
+                                <span class="text-muted">EGP @(item.Product.Price * item.Count)</span>
                             </li>
                         }
                     </ul>
                     <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <strong>Subtotal:</strong>
+                            <strong style="color:#717FE0">EGP @Model.OrderHeader.totalPrice</strong>
+                        </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <strong>Delivery fees:</strong>
                             <strong style="color:#717FE0">EGP 50</strong>
