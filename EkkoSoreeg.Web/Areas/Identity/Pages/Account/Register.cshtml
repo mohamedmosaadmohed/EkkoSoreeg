@@ -5,46 +5,69 @@
 @{
     ViewData["Title"] = "Register";
 }
- <style>
-        .imagediv {
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+<style>
+    .imagediv {
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-        .loginimg {
-            height: auto;
-            max-width: 100%;
-            margin: auto;
-        }
+    .loginimg {
+        height: auto;
+        max-width: 100%;
+        margin: auto;
+    }
 
     .formgh {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-        form h2 {
-            margin-bottom: 20px;
-        }
+    form h2 {
+        margin-bottom: 20px;
+    }
 
-        .form-floating {
-            margin-bottom: 15px;
-        }
+    .form-floating {
+        position: relative;
+        margin-bottom: 15px;
+    }
 
         .form-floating input {
             height: 50px;
             padding: 10px 15px;
+            padding-right: 50px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .btn-primary {
-            background-color: #717FE0;
-            border-color: #717FE0;
-            transition: background-color 0.3s, border-color 0.3s;
-            border-radius:23px;
+        .form-floating .input-container {
+            position: relative;
+            height: 100%;
         }
+
+        .form-floating .toggle-password {
+            position: absolute;
+            bottom: 50%;
+            right: 15px;
+            transform: translateY(50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #6c757d;
+        }
+
+        .form-floating .error-message {
+            margin-top: 5px;
+        }
+
+    .btn-primary {
+        background-color: #717FE0;
+        border-color: #717FE0;
+        transition: background-color 0.3s, border-color 0.3s;
+        border-radius: 23px;
+    }
 
         .btn-primary:hover {
             background-color: #666666;
@@ -58,15 +81,15 @@
     }
 
         .form-radio-group input[type="radio"] {
-            margin-right: 10px;
+            margin-right: 5px;
         }
 
         .form-radio-group label {
             margin-right: 20px;
-            margin-bottom: 0 !important;
-        }
+            margin-bottom: 0px !important;
 
-    </style>
+        }
+</style>
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row justify-content-center">
@@ -88,13 +111,24 @@
                         <span asp-validation-for="Input.Email" class="text-danger"></span>
                     </div>
                     <div class="form-floating">
-                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Password" />
+                        <div class="input-container">
+                            <input asp-for="Input.Password" id="password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Password" />
+                            <span class="toggle-password" id="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
                     <div class="form-floating">
-                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm Password" />
+                        <div class="input-container">
+                            <input asp-for="Input.ConfirmPassword" id="confirm-password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm Password" />
+                            <span class="toggle-password" id="toggle-confirm-password">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
+
                     @if (User.IsInRole(SD.AdminRole))
                     {
                         <div class="form-radio-group">
@@ -130,4 +164,31 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordField = document.getElementById('password');
+            const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+            const confirmPasswordField = document.getElementById('confirm-password');
+
+            togglePassword.addEventListener('click', () => {
+                // Toggle the type attribute for the password field
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+
+                // Toggle the eye icon
+                togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+
+            toggleConfirmPassword.addEventListener('click', () => {
+                // Toggle the type attribute for the confirm password field
+                const type = confirmPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordField.setAttribute('type', type);
+
+                // Toggle the eye icon
+                toggleConfirmPassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+        });
+    </script>
+
 }

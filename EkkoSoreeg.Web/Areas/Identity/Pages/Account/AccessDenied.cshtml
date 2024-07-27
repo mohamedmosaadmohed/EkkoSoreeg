@@ -3,14 +3,30 @@
 @{
     ViewData["Title"] = "Access denied";
 }
-
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="container">
+            <div class="text">
+                <h1>@ViewData["Title"]</h1>
+                @{
+                    <p class="text-danger">You do not have access to this resource,please Call Admin to add you Permission</p>
+                }
+            </div>
+        </div>
+    </div>
+</section>
 <style>
-    .error {
-        text-align: center;
-        margin: 120px 30px;
+    .text {
+        margin-top: 120px;
+        margin-bottom: 170px;
     }
+
+        .text h1 {
+            font-weight: bold;
+            padding-bottom: 20px;
+        }
+
+        .text p {
+            font-size: 20px;
+        }
 </style>
-<div class="error">
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource,please Call Admin to add you Permission</p>
-</div>
