@@ -23,6 +23,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages").ToPagedList(pageNumber,pageSize);
 			return View(products);
 		}
+
 		public IActionResult Details(int Id,int ? page)
 		{
 			var pageNumber = page ?? 1;
@@ -65,6 +66,11 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			}
 			
 			return RedirectToAction("Index");
+		}
+
+		public IActionResult AboutUs()
+		{
+			return View();
 		}
 	}
 }
