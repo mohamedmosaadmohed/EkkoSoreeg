@@ -202,15 +202,15 @@
 							<div class="block2-pic hov-img0 position-relative">
 								@if (item.Stock == 0)
 								{
-									<div class="outofstock">
+									<div class="badge outofstock">
 										<p>OUT OF STOCK</p>
-								     </div>
+									</div>
 								}
 								else if (item.OfferPrice != 0)
 								{
-									<div class="badge-badge">Offer</div>
+									<div class="badge offer">Offer</div>
 								}
-								<img src="~/@item.ProductImages.First().ImagePath" alt="IMG-PRODUCT">
+								<img src="~/@item.ProductImages.First().ImagePath" alt="IMG-PRODUCT" class="product-image">
 								<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
 									Quick View
 								</a>
@@ -235,9 +235,7 @@
 											EGP @item.Price
 										</span>
 									}
-
 								</div>
-
 								<div class="block2-txt-child2 flex-r p-t-3">
 									<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
 										<img class="icon-heart1 dis-block trans-04" src="~/Customer/images/icons/icon-heart-01.png" alt="ICON">
@@ -252,6 +250,7 @@
 		</div>
 
 
+
 		<!-- Load more -->
 		<div class="flex-c-m flex-w w-full p-t-45">
 			@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page = page }),
@@ -263,14 +262,26 @@
 		</div>
 	</div>
 </section>
-
 <style>
+	.block2 {
+		height: 100%;
+	}
+
 	.block2-pic {
 		position: relative;
 		display: inline-block;
+		width: 100%;
+		height: 320px;
+		overflow: hidden;
 	}
 
-	.badge-badge {
+	.product-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.badge {
 		position: absolute;
 		top: 10px;
 		right: 10px;
@@ -283,7 +294,6 @@
 	}
 
 	.outofstock {
-		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
@@ -293,10 +303,23 @@
 		display: block;
 		width: 100%;
 	}
-	.outofstock p{
-	   color: #000;
-	   font-size: 20px;
-	   font-weight: bold;
-	   text-align:center;
+
+		.outofstock p {
+			color: #000;
+			font-size: 20px;
+			font-weight: bold;
+			text-align: center;
+		}
+
+	.badge.offer {
+		top: 10px;
+		right: 10px;
+		background-color: #f74877;
+		color: white;
+		padding: 5px 10px;
+		font-size: 12px;
+		font-weight: bold;
+		border-radius: 5px;
 	}
+
 </style>

@@ -23,13 +23,15 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages").ToPagedList(pageNumber,pageSize);
 			return View(products);
 		}
-		public IActionResult Details(int id)
+		public IActionResult Details(int Id,int ? page)
 		{
-			var product = _unitOfWork.Product.GetFirstorDefault(X => X.Id == id, IncludeWord: "TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize,ProductImages");
-			var relatedProducts = _unitOfWork.Product.GetAll(x => x.TbCatagory.Name == product.TbCatagory.Name && x.Id != id);
+			var pageNumber = page ?? 1;
+			int pageSize = 6;
+			var product = _unitOfWork.Product.GetFirstorDefault(X => X.Id == Id, IncludeWord: "TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize,ProductImages");
+			var relatedProducts = _unitOfWork.Product.GetAll(x => x.TbCatagory.Name == product.TbCatagory.Name && x.Id != Id, IncludeWord: "ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize,ProductImages").ToPagedList(pageNumber, pageSize); ;
 			ShoppingCart obj = new ShoppingCart()
 			{
-				ProductId = id,
+				ProductId = Id,
 				Product = product,
 				Count = 1,
 				RelatedProducts = relatedProducts

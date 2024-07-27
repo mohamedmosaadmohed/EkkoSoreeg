@@ -25,17 +25,40 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-        form h2 {
-            margin-bottom: 20px;
-        }
+    form h2 {
+        margin-bottom: 20px;
+    }
 
     .form-floating {
+        position: relative;
         margin-bottom: 15px;
     }
 
         .form-floating input {
             height: 50px;
             padding: 10px 15px;
+            padding-right: 50px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-floating .input-container {
+            position: relative;
+            height: 100%;
+        }
+
+        .form-floating .toggle-password {
+            position: absolute;
+            bottom: 50%;
+            right: 15px;
+            transform: translateY(50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #6c757d;
+        }
+
+        .form-floating .error-message {
+            margin-top: 5px;
         }
 
     .btn-primary {
@@ -76,8 +99,13 @@
                             <span asp-validation-for="Input.Email" class="text-danger"></span>
                         </div>
                         <div class="form-floating">
-                            <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            <div class="input-container">
+                                <input asp-for="Input.Password" id="password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Password" />
+                                <span class="toggle-password" id="toggle-password">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            <span asp-validation-for="Input.Password" class="text-danger error-message"></span>
                         </div>
                         <div class="form-check mb-3">
                             <input class="form-check-input" style="margin-left:0" asp-for="Input.RememberMe" />
@@ -107,6 +135,23 @@
         </div>
     </div>
 </section>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordField = document.getElementById('password');
+
+        togglePassword.addEventListener('click', () => {
+            // Toggle the type attribute
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+
+            // Toggle the eye icon
+            togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+    });
+</script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
