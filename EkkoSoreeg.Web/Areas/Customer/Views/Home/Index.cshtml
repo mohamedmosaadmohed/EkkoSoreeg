@@ -1,7 +1,4 @@
 ﻿@model IEnumerable<Product>
-@{
-	var productsToDisplay = Model.Take(6);
-}
 @using X.PagedList.Mvc.Core
 @using X.PagedList
 <!-- Slider -->
@@ -194,7 +191,7 @@
 		</div>
 		<hr />
 		<div class="row isotope-grid">
-			@foreach (var item in productsToDisplay)
+			@foreach (var item in Model)
 			{
 				<a href="/Customer/Home/Details/@item.Id">
 					<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
@@ -214,6 +211,7 @@
 								<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
 									Quick View
 								</a>
+
 							</div>
 							<div class="block2-txt flex-w flex-t p-t-14">
 								<div class="block2-txt-child1 flex-col-l">
@@ -262,6 +260,9 @@
 		</div>
 	</div>
 </section>
+
+@await Component.InvokeAsync("Modal", new { Id = 2 })
+
 <style>
 	.block2 {
 		height: 100%;

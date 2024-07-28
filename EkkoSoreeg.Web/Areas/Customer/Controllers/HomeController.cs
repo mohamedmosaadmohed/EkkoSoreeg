@@ -78,5 +78,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		{
 			return View();
 		}
+
+
 	}
 }
