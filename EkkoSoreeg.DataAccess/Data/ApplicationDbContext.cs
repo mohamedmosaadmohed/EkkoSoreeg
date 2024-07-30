@@ -20,6 +20,7 @@ namespace EkkoSoreeg.DataAccess.Data
         public DbSet<ProductColorMapping> ProductColorMappings { get; set; }
         public DbSet<ProductSizeMapping> ProductSizeMappings { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Review> reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

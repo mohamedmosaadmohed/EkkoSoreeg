@@ -19,6 +19,7 @@
         public const string Rejected = "Rejected";
 
         public const string SessionKey = "ShoppingCartSession";
+        public const string WishKey = "WishSession";
 
     }
 }

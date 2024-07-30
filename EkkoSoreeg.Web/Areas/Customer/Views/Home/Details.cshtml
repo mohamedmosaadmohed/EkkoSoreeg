@@ -4,13 +4,13 @@
 <!-- breadcrumb -->
 <div class="container mt-5">
 	<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
-		<a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
+		<a asp-area="Customer" asp-controller="Home" asp-action="Index" class="stext-109 cl8 hov-cl1 trans-04">
 			Home
 			<i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
 		</a>
 
-		<a href="product.html" class="stext-109 cl8 hov-cl1 trans-04">
-			Men
+		<a asp-area="Customer" asp-controller="Shop" asp-action="Index" class="stext-109 cl8 hov-cl1 trans-04">
+			 Shop
 			<i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
 		</a>
 
@@ -20,9 +20,8 @@
 	</div>
 </div>
 
-
+<partial name="_Toaster" />
 <!-- Product Detail -->
-
 <section class="sec-product-detail bg0 p-t-65 p-b-60">
 		<div class="container">
 			<div class="row">
@@ -38,7 +37,7 @@
 									<div class="item-slick3" data-thumb="/@image.ImagePath">
 										<div class="wrap-pic-w pos-relative">
 											<img src="~/@image.ImagePath" alt="IMG-PRODUCT">
-											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="#">
+										    <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="~/@image.ImagePath">
 												<i class="fa fa-expand"></i>
 											</a>
 										</div>
@@ -79,8 +78,8 @@
 							</div>
 							<div class="size-204 respon6-next">
 								<div class="rs1-select2 bor8 bg0">
-									<select class="js-select2" id="selectSize">
-										<option value="">Select Size</option>
+									<select class="js-select2" id="selectSize" required>
+										<option value="" disabled selected>Select Size</option>
 										@foreach (var size in Model.Product.ProductSizeMappings.Select(p => p.ProductSize))
 										{
 											<option value="@size.Id">@size.Name</option>
@@ -98,7 +97,7 @@
 							<div class="size-204 respon6-next">
 								<div class="rs1-select2 bor8 bg0">
 									<select class="js-select2" id="selectColor">
-										<option value="">Select Color</option>
+										<option value="" disabled selected>Select Color</option>
 										@foreach (var color in Model.Product.ProductColorMappings.Select(p => p.ProductColor))
 										{
 											<option value="@color.Id">@color.Name</option>
@@ -525,7 +524,7 @@
 			const productCount = document.querySelector('.num-product').value;
 
 			// Validation checks
-			if (!selectedSizeText) {
+			if (sizeSelect.value === "") {
 				Swal.fire({
 					icon: 'error',
 					title: 'Error',
@@ -534,7 +533,7 @@
 				return;
 			}
 
-			if (!selectedColorText) {
+			if (colorSelect.value === "") {
 				Swal.fire({
 					icon: 'error',
 					title: 'Error',
@@ -551,6 +550,7 @@
 			// Submit the form
 			document.getElementById('Details').submit();
 		}
+
 	</script>
 
 }

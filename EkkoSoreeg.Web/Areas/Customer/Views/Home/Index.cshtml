@@ -2,7 +2,7 @@
 @using X.PagedList.Mvc.Core
 @using X.PagedList
 <!-- Slider -->
-<partial name="_Toaster"/>
+
 <section class="section-slide">
 	<div class="wrap-slick1">
 		<div class="slick1">
@@ -22,7 +22,7 @@
 						</div>
 
 						<div class="layer-slick1 animated visible-false" data-appear="zoomIn" data-delay="1600">
-							<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+							<a asp-area="Customer" asp-controller="Shop" asp-action="Index" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 								Shop Now
 							</a>
 						</div>
@@ -46,7 +46,7 @@
 						</div>
 
 						<div class="layer-slick1 animated visible-false" data-appear="slideInUp" data-delay="1600">
-							<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+							<a asp-area="Customer" asp-controller="Shop" asp-action="Index" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 								Shop Now
 							</a>
 						</div>
@@ -70,7 +70,7 @@
 						</div>
 
 						<div class="layer-slick1 animated visible-false" data-appear="rotateIn" data-delay="1600">
-							<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+							<a asp-area="Customer" asp-controller="Shop" asp-action="Index" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 								Shop Now
 							</a>
 						</div>
@@ -235,7 +235,7 @@
 									}
 								</div>
 								<div class="block2-txt-child2 flex-r p-t-3">
-									<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+									<a href="/Customer/Home/AddWishList/@item.Id" class="btn-addwish-b2 dis-block pos-relative">
 										<img class="icon-heart1 dis-block trans-04" src="~/Customer/images/icons/icon-heart-01.png" alt="ICON">
 										<img class="icon-heart2 dis-block trans-04 ab-t-l" src="~/Customer/images/icons/icon-heart-02.png" alt="ICON">
 									</a>
@@ -244,6 +244,7 @@
 						</div>
 					</div>
 				</a>
+				
 			}
 		</div>
 
@@ -260,9 +261,7 @@
 		</div>
 	</div>
 </section>
-
-@await Component.InvokeAsync("Modal", new { Id = 2 })
-
+@await Component.InvokeAsync("Modal", new { Id = 2})
 <style>
 	.block2 {
 		height: 100%;

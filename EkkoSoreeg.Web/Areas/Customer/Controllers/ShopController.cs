@@ -57,7 +57,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
             switch (sortBy)
             {
                 case "Offers":
-                    products = products.Where(p => p.OfferPrice > 0);
+                    products = products.Where(p => p.OfferPrice > 0 &&  p.Stock != 0);
                     break;
                 case "Newness":
                     products = products.OrderByDescending(p => p.CreateDate);

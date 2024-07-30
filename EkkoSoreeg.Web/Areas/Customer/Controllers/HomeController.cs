@@ -1,8 +1,11 @@
 ﻿using EkkoSoreeg.Entities.Models;
 using EkkoSoreeg.Entities.Repositories;
+using EkkoSoreeg.Entities.ViewModels;
 using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.Security.Claims;
 using X.PagedList.Extensions;
 
@@ -23,7 +26,6 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages").ToPagedList(pageNumber,pageSize);
 			return View(products);
 		}
-
 		public IActionResult Details(int Id,int ? page)
 		{
 			var pageNumber = page ?? 1;
@@ -41,42 +43,120 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		}
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		[Authorize]
 		public IActionResult Details(ShoppingCart shoppingCart)
 		{
-			var ProductFromDb = _unitOfWork.Product.GetFirstorDefault(X => X.Id == shoppingCart.ProductId);
-			var claimsIdentity = (ClaimsIdentity)User.Identity;
-			var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-			shoppingCart.ApplicationUserId = claim.Value;
-			ShoppingCart cartObj = _unitOfWork.ShoppingCart.GetFirstorDefault(
-				U => U.ApplicationUserId == claim.Value && U.ProductId == shoppingCart.ProductId
-				&& U.Color == shoppingCart.Color && U.Size == shoppingCart.Size
-			);
-			shoppingCart.Product = ProductFromDb;
-			if (ProductFromDb.OfferPrice != 0)
-			{
-				shoppingCart.Product.Price = shoppingCart.Product.OfferPrice;
-			}
-			if (cartObj == null)
-			{
-				_unitOfWork.ShoppingCart.Add(shoppingCart);
-				_unitOfWork.Complete();
-				HttpContext.Session.SetInt32(SD.SessionKey,
-					_unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == claim.Value).ToList().Count());
+			var productFromDb = _unitOfWork.Product.GetFirstorDefault(x => x.Id == shoppingCart.ProductId, IncludeWord: "ProductImages");
 
+			// Determine if the user is logged in
+			var claimsIdentity = (ClaimsIdentity)User.Identity;
+			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+			shoppingCart.Product = productFromDb;
+
+			if (productFromDb.OfferPrice != 0)
+			{
+				shoppingCart.Product.Price = productFromDb.OfferPrice;
+			}
+
+			if (claim != null)
+			{
+				// User is logged in
+				shoppingCart.ApplicationUserId = claim.Value;
+				var cartObj = _unitOfWork.ShoppingCart.GetFirstorDefault(
+					u => u.ApplicationUserId == claim.Value && u.ProductId == shoppingCart.ProductId
+					&& u.Color == shoppingCart.Color && u.Size == shoppingCart.Size
+				);
+
+				if (cartObj == null)
+				{
+					_unitOfWork.ShoppingCart.Add(shoppingCart);
+					_unitOfWork.Complete();
+				}
+				else
+				{
+					_unitOfWork.ShoppingCart.IncreaseCount(cartObj, shoppingCart.Count);
+					_unitOfWork.Complete();
+				}
+
+				HttpContext.Session.SetInt32(SD.SessionKey,
+					_unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value).ToList().Count());
 			}
 			else
 			{
-				_unitOfWork.ShoppingCart.IncreaseCount(cartObj, shoppingCart.Count);
-				_unitOfWork.Complete();
-			}
-			
-			return RedirectToAction("Index");
-		}
+				// User is not logged in, use cookies
+				List<ShoppingCart> cartList = new List<ShoppingCart>();
+				string cartData = Request.Cookies["Cart"];
+				if (!string.IsNullOrEmpty(cartData))
+				{
+					cartList = JsonConvert.DeserializeObject<List<ShoppingCart>>(cartData);
+				}
 
+				var cartItem = cartList.FirstOrDefault(x => x.ProductId == shoppingCart.ProductId
+															 && x.Color == shoppingCart.Color
+															 && x.Size == shoppingCart.Size);
+				if (cartItem == null)
+				{
+					cartList.Add(shoppingCart);
+				}
+				else
+				{
+					cartItem.Count += shoppingCart.Count;
+				}
+
+				var settings = new JsonSerializerSettings
+				{
+					ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+				};
+				string updatedCartData = JsonConvert.SerializeObject(cartList, settings);
+				Response.Cookies.Append("Cart", updatedCartData, new CookieOptions
+				{
+					HttpOnly = true,
+					Secure = true,
+					Expires = DateTimeOffset.UtcNow.AddDays(7)
+				});
+			}
+			TempData["Order"] = "Added to Cart Successfully";
+			return RedirectToAction("Details", "Home", new { area = "Customer", id = shoppingCart.ProductId });
+		}
 		public IActionResult AboutUs()
 		{
 			return View();
+		}
+
+		public IActionResult Wish()
+		{
+			List<Product> productList = new List<Product>();
+			string productData = Request.Cookies[SD.WishKey];
+			if (!string.IsNullOrEmpty(productData))
+			{
+				productList = JsonConvert.DeserializeObject<List<Product>>(productData);
+			}
+			return View(productList);
+		}
+		[HttpGet]
+        public IActionResult AddWishList(int Id)
+        {
+			var product = _unitOfWork.Product.GetFirstorDefault(X => X.Id == Id, IncludeWord:
+				"TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize,ProductImages");
+			List<Product> productList = new List<Product>();
+            string productData = Request.Cookies[SD.WishKey];
+			productList?.Add(product);
+			var settings = new JsonSerializerSettings
+			{
+				ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+			};
+			string updatedCartData = JsonConvert.SerializeObject(productList, settings);
+			Response.Cookies.Append(SD.WishKey, updatedCartData, new CookieOptions
+			{
+				HttpOnly = true,
+				Secure = true,
+				Expires = DateTimeOffset.UtcNow.AddDays(7)
+			});
+			return RedirectToAction("Wish", "Home");
+        }
+		[HttpDelete]
+		public IActionResult DeleteFromWish(int wishid)
+		{
+			return RedirectToAction("Wish", "Home");
 		}
 
 

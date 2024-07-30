@@ -13,8 +13,13 @@ using System.Configuration;
 using EkkoSoreeg.Web.DataSeed;
 using System;
 
-var builder = WebApplication.CreateBuilder(args);
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews()
+	.AddNewtonsoftJson(options =>
+	{
+		options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+	});
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -45,7 +50,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true;
+	options.IdleTimeout = TimeSpan.FromDays(10);
+});
 
 var app = builder.Build();
 

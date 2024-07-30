@@ -1,0 +1,66 @@
+﻿@model List<Product>
+<div class="container mt-5">
+	<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+		<a asp-area="Customer" asp-controller="Home" asp-action="Index" class="stext-109 cl8 hov-cl1 trans-04">
+			Home
+			<i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+		</a>
+
+		<span class="stext-109 cl4">
+			Wishing List
+		</span>
+	</div>
+</div>
+
+<div class="bg0 p-t-75 p-b-85">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12 col-xl-10 m-lr-auto m-b-100">
+				<div class="m-l-25 m-r--38 m-lr-0-xl">
+					<div class="wrap-table-shopping-cart">
+						<table class="table-shopping-cart">
+							<tr class="table_head">
+								<th class="column-1">Product</th>
+								<th class="column-2"></th>
+								<th class="column-3">Price</th>
+								<th class="column-3">Remove</th>
+								<th class="column-3">Add to Cart</th>
+							</tr>
+							@foreach(var item in Model)
+							{
+								<tr class="table_row">
+									<td class="column-1">
+										<div class="how-itemcart1">
+											<img src="~/@item.ProductImages.First().ImagePath" alt="IMG">
+										</div>
+									</td>
+									<td class="column-2">@item.Name</td>
+									@if (item.OfferPrice != 0)
+									{
+										<td class="column-3">
+											EGP <del>@item.Price</del> @item.OfferPrice
+										</td>
+									}
+									else
+									{
+									 <td class="column-3">EGP @item.Price</td>
+									}
+									<td class="column-3">
+										<a asp-action="DeleteFromWish" asp-route-wishid="@item.Id" class="btn btn-danger">
+											<i class="fas fa-trash"></i>
+										</a>
+									</td>
+									<td class="column-3">
+										<a href="/Customer/Home/Details/@item.Id" class="btn btn-primary">
+											<i class="fas fa-info-circle"></i>
+										</a>
+									</td>
+								</tr>
+							}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

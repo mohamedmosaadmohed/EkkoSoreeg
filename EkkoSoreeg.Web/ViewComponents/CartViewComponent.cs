@@ -17,7 +17,7 @@ namespace EkkoSoreeg.Web.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = User.Identity as ClaimsIdentity;
             if (claimsIdentity == null)
             {
                 return View(new ShoppingCartVM());
