@@ -75,7 +75,9 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> Create(ProductVM productVM, List<IFormFile> files, List<int> SelectedColors, List<int> SelectedSizes)
+        public async Task<IActionResult> Create(ProductVM productVM,
+            List<IFormFile> files, List<int> SelectedColors,
+            List<int> SelectedSizes)
         {
             if (ModelState.IsValid)
             {
@@ -193,65 +195,62 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> Update(ProductVM productVM, IFormFile[] files)
+        public async Task<IActionResult> Update(ProductVM productVM, IFormFile[]? files)
         {
             if (ModelState.IsValid)
             {
                 string rootPath = _webHostEnvironment.WebRootPath;
 
-                // Remove all existing images for the product
-                var existingImages = _context.ProductImages.Where(img => img.ProductId == productVM.Product.Id).ToList();
-                foreach (var image in existingImages)
+                if(files != null && files.Length > 0)
                 {
-                    var imagePath = Path.Combine(rootPath, image.ImagePath.TrimStart('\\'));
-                    if (System.IO.File.Exists(imagePath))
-                    {
-                        System.IO.File.Delete(imagePath);
-                    }
-                }
-                _context.ProductImages.RemoveRange(existingImages);
-                await _context.SaveChangesAsync();
+					// Remove all existing images for the product
+					var existingImages = _context.ProductImages.Where(img => img.ProductId == productVM.Product.Id).ToList();
+					foreach (var image in existingImages)
+					{
+						var imagePath = Path.Combine(rootPath, image.ImagePath.TrimStart('\\'));
+						if (System.IO.File.Exists(imagePath))
+						{
+							System.IO.File.Delete(imagePath);
+						}
+					}
+					_context.ProductImages.RemoveRange(existingImages);
+					await _context.SaveChangesAsync();
 
-                // Upload new images
-                if (files != null && files.Length > 0)
-                {
-                    foreach (var file in files)
-                    {
-                        if (file.Length > 0)
-                        {
-                            string filename = Guid.NewGuid().ToString();
-                            var uploadPath = Path.Combine(rootPath, $"Dashboard\\Images\\Products\\{productVM.Product.Id.ToString()}");
-                            var extension = Path.GetExtension(file.FileName);
+					// Upload new images
+					foreach (var file in files)
+					{
+				        if (file.Length > 0)
+				        {
+					        string filename = Guid.NewGuid().ToString();
+					        var uploadPath = Path.Combine(rootPath, $"Dashboard\\Images\\Products\\{productVM.Product.Id.ToString()}");
+					        var extension = Path.GetExtension(file.FileName);
 
-                            // Create directory if it doesn't exist
-                            if (!Directory.Exists(uploadPath))
-                            {
-                                Directory.CreateDirectory(uploadPath);
-                            }
+					        // Create directory if it doesn't exist
+					        if (!Directory.Exists(uploadPath))
+					        {
+						        Directory.CreateDirectory(uploadPath);
+					        }
 
-                            // Save the new image
-                            var filePath = Path.Combine(uploadPath, filename + extension);
-                            using (var fileStream = new FileStream(filePath, FileMode.Create))
-                            {
-                                file.CopyTo(fileStream);
-                            }
+					        // Save the new image
+					        var filePath = Path.Combine(uploadPath, filename + extension);
+					        using (var fileStream = new FileStream(filePath, FileMode.Create))
+					        {
+						        file.CopyTo(fileStream);
+					        }
 
-                            // Add image record to the database
-                            var newImage = new ProductImage
-                            {
-                                ProductId = productVM.Product.Id,
-                                ImagePath = $"Dashboard\\Images\\Products\\{productVM.Product.Id.ToString()}\\" + filename + extension
-                            };
-                           await _context.ProductImages.AddAsync(newImage);
-                        }
-                    }
-                    await _context.SaveChangesAsync();
-                }
-                _unitOfWork.Product.Update(productVM.Product);
-                
-
-                // Retrieve existing color mappings for the product
-                var existingColorMappings = _context.ProductColorMappings
+					        // Add image record to the database
+					        var newImage = new ProductImage
+					        {
+						        ProductId = productVM.Product.Id,
+						        ImagePath = $"Dashboard\\Images\\Products\\{productVM.Product.Id.ToString()}\\" + filename + extension
+					        };
+					        await _context.ProductImages.AddAsync(newImage);
+				        }
+					}
+					await _context.SaveChangesAsync();
+				}
+				// Retrieve existing color mappings for the product
+				var existingColorMappings = _context.ProductColorMappings
                     .Where(pcm => pcm.ProductId == productVM.Product.Id)
                     .ToList();
                 // Retrieve existing Size mappings for the product
@@ -308,7 +307,9 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     }
                     // If it exists, no need to update since it's already present
                 }
-                _unitOfWork.Complete();
+                _context.SaveChanges();
+				_unitOfWork.Product.Update(productVM.Product);
+				_unitOfWork.Complete();
 
                 TempData["Update"] = "Product Has been Updated Successfully";
                 return RedirectToAction("Index");
@@ -432,7 +433,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
 
             return Json(new { success = true, message = "Product Has been Deleted Successfully" });
         }
-        [HttpDelete]
+        [HttpPost]
         public async Task<IActionResult> DeleteImage(int ? imageId,int productId)
         {
             var productImage = await _context.ProductImages.FindAsync(imageId);

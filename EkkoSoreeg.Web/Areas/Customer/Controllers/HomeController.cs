@@ -2,7 +2,9 @@
 using EkkoSoreeg.Entities.Repositories;
 using EkkoSoreeg.Entities.ViewModels;
 using EkkoSoreeg.Utilities;
+using EkkoSoreeg.Web.DataSeed;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -82,38 +84,24 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			}
 			else
 			{
-				// User is not logged in, use cookies
-				List<ShoppingCart> cartList = new List<ShoppingCart>();
-				string cartData = Request.Cookies["Cart"];
-				if (!string.IsNullOrEmpty(cartData))
-				{
-					cartList = JsonConvert.DeserializeObject<List<ShoppingCart>>(cartData);
-				}
+                var cartItems = HttpContext.Session.GetObjectFromJson<List<ShoppingCart>>(SD.CartKey) ?? new List<ShoppingCart>();
 
-				var cartItem = cartList.FirstOrDefault(x => x.ProductId == shoppingCart.ProductId
-															 && x.Color == shoppingCart.Color
-															 && x.Size == shoppingCart.Size);
-				if (cartItem == null)
-				{
-					cartList.Add(shoppingCart);
-				}
-				else
-				{
-					cartItem.Count += shoppingCart.Count;
-				}
+                var cartItem = cartItems.FirstOrDefault(x => x.ProductId == shoppingCart.ProductId
+                                                             && x.Color == shoppingCart.Color
+                                                             && x.Size == shoppingCart.Size);
 
-				var settings = new JsonSerializerSettings
-				{
-					ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-				};
-				string updatedCartData = JsonConvert.SerializeObject(cartList, settings);
-				Response.Cookies.Append("Cart", updatedCartData, new CookieOptions
-				{
-					HttpOnly = true,
-					Secure = true,
-					Expires = DateTimeOffset.UtcNow.AddDays(7)
-				});
-			}
+                if (cartItem == null)
+                {
+                    cartItems.Add(shoppingCart);
+                }
+                else
+                {
+                    cartItem.Count += shoppingCart.Count;
+                }
+
+                HttpContext.Session.SetObjectAsJson(SD.CartKey, cartItems, TimeSpan.FromDays(7));
+                HttpContext.Session.SetInt32(SD.SessionKey, cartItems.Sum(x => x.Count));
+            }
 			TempData["Order"] = "Added to Cart Successfully";
 			return RedirectToAction("Details", "Home", new { area = "Customer", id = shoppingCart.ProductId });
 		}

@@ -1,6 +1,7 @@
 ﻿using EkkoSoreeg.Entities.Models;
 using EkkoSoreeg.Entities.Repositories;
 using EkkoSoreeg.Utilities;
+using EkkoSoreeg.Web.DataSeed;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
@@ -33,17 +34,10 @@ namespace EkkoSoreeg.Web.ViewComponents
 			}
 			else
 			{
-				string cartData = Request.Cookies["Cart"];
-				int cartCount = 0;
-
-				if (!string.IsNullOrEmpty(cartData))
-				{
-					var cartList = JsonConvert.DeserializeObject<List<ShoppingCart>>(cartData);
-					cartCount = cartList.Count;
-				}
-
-				return View(cartCount);
-			}
+                var cartItems = HttpContext.Session.GetObjectFromJson<List<ShoppingCart>>(SD.CartKey);
+                int cartCount = cartItems?.Count ?? 0;
+                return View(cartCount);
+            }
 		}
 
 	}

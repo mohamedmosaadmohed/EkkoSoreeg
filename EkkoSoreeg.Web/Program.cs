@@ -12,6 +12,7 @@ using OfficeOpenXml;
 using System.Configuration;
 using EkkoSoreeg.Web.DataSeed;
 using System;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,12 +51,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-	options.Cookie.HttpOnly = true;
-	options.Cookie.IsEssential = true;
-	options.IdleTimeout = TimeSpan.FromDays(10);
-});
+builder.Services.AddSession();
+
+
 
 var app = builder.Build();
 
@@ -90,4 +88,5 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     SeedData.Initialize(services).Wait();
 }
+
 app.Run();
