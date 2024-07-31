@@ -25,10 +25,22 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             _context = context;
 
         }
-        public IActionResult GetData()
+        public IActionResult GetData(int draw, int start, int length, string searchTerm)
         {
-            var products = _unitOfWork.Product.GetAll(IncludeWord: "TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize");
-            var productList = products.Select(p => new
+            var query = _unitOfWork.Product.GetAll(IncludeWord: "TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize");
+
+            // Apply search filter
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(p => p.Name.Contains(searchTerm));
+            }
+
+            var totalRecords = query.Count();
+
+            // Apply pagination
+            var data = query.Skip(start).Take(length).ToList();
+
+            var productList = data.Select(p => new
             {
                 p.Id,
                 p.Name,
@@ -40,9 +52,9 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 ProductColors = p.ProductColorMappings.Select(c => c.ProductColor.Name).ToList(),
                 ProductSizes = p.ProductSizeMappings.Select(s => s.ProductSize.Name).ToList()
             }).ToList();
-
-            return Json(new { data = productList });
+            return Json(new { draw = draw, recordsTotal = totalRecords, recordsFiltered = totalRecords, data = productList });
         }
+
         public IActionResult Index()
         {
             var Product = _unitOfWork.Product.GetAll();

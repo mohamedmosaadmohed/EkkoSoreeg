@@ -88,6 +88,7 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
+
 // Seed the database
 using (var scope = app.Services.CreateScope())
 {

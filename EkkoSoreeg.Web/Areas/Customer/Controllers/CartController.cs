@@ -200,33 +200,66 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 		[Authorize]
 		public IActionResult Checkout()
 		{
+			ShoppingCartVM shoppingCartVM = new ShoppingCartVM();
 			var claimsIdentity = User.Identity as ClaimsIdentity;
 			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
-			shoppingCartVM = new ShoppingCartVM()
-			{
-				shoppingCarts = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product"),
-				OrderHeader = new()
-			};
-			shoppingCartVM.OrderHeader.applicationUser = _unitOfWork.ApplicationUser.GetFirstorDefault(X => X.Id == claim.Value);
-			shoppingCartVM.OrderHeader.FirstName = shoppingCartVM.OrderHeader.applicationUser.FirstName;
-			shoppingCartVM.OrderHeader.LastName = shoppingCartVM.OrderHeader.applicationUser.LastName;
-			shoppingCartVM.OrderHeader.Email = shoppingCartVM.OrderHeader.applicationUser.Email;
 
-			// Get Saved Past Transaction
-			shoppingCartVM.OrderHeader.PhoneNumber = shoppingCartVM.OrderHeader.applicationUser.PhoneNumber;
-			shoppingCartVM.OrderHeader.AdditionalPhoneNumber = shoppingCartVM.OrderHeader.applicationUser.AdditionalPhoneNumber;
-			shoppingCartVM.OrderHeader.Address = shoppingCartVM.OrderHeader.applicationUser.Address;
-			shoppingCartVM.OrderHeader.Region = shoppingCartVM.OrderHeader.applicationUser.Region;
-			shoppingCartVM.OrderHeader.City = shoppingCartVM.OrderHeader.applicationUser.City;
-
-			foreach (var item in shoppingCartVM.shoppingCarts)
+			if (claim != null)
 			{
-				shoppingCartVM.OrderHeader.totalPrice += (item.Count * item.Product.Price);
+				// User is authenticated
+				shoppingCartVM = new ShoppingCartVM()
+				{
+					shoppingCarts = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product"),
+					OrderHeader = new OrderHeader()
+					{
+						applicationUser = _unitOfWork.ApplicationUser.GetFirstorDefault(x => x.Id == claim.Value)
+					}
+				};
+
+				// Retrieve and save cart data from cookie if it exists
+				var cartCookie = Request.Cookies[SD.CartKey];
+				if (!string.IsNullOrEmpty(cartCookie))
+				{
+					var cartItemsFromCookie = JsonConvert.DeserializeObject<List<ShoppingCart>>(cartCookie);
+
+					// Transfer items from cookie to database
+					foreach (var item in cartItemsFromCookie)
+					{
+						var existingCartItem = shoppingCartVM.shoppingCarts.FirstOrDefault(
+							x => x.ProductId == item.ProductId && x.Color == item.Color && x.Size == item.Size);
+						if (existingCartItem != null)
+						{
+							existingCartItem.Count += item.Count;
+						}
+						else
+						{
+							item.ApplicationUserId = claim.Value;
+							_unitOfWork.ShoppingCart.Add(item);
+						}
+					}
+
+					_unitOfWork.Complete();
+					Response.Cookies.Delete(SD.CartKey);
+				}
+
+				shoppingCartVM.OrderHeader.FirstName = shoppingCartVM.OrderHeader.applicationUser.FirstName;
+				shoppingCartVM.OrderHeader.LastName = shoppingCartVM.OrderHeader.applicationUser.LastName;
+				shoppingCartVM.OrderHeader.Email = shoppingCartVM.OrderHeader.applicationUser.Email;
+				shoppingCartVM.OrderHeader.PhoneNumber = shoppingCartVM.OrderHeader.applicationUser.PhoneNumber;
+				shoppingCartVM.OrderHeader.AdditionalPhoneNumber = shoppingCartVM.OrderHeader.applicationUser.AdditionalPhoneNumber;
+				shoppingCartVM.OrderHeader.Address = shoppingCartVM.OrderHeader.applicationUser.Address;
+				shoppingCartVM.OrderHeader.Region = shoppingCartVM.OrderHeader.applicationUser.Region;
+				shoppingCartVM.OrderHeader.City = shoppingCartVM.OrderHeader.applicationUser.City;
+
+				foreach (var item in shoppingCartVM.shoppingCarts)
+				{
+					shoppingCartVM.OrderHeader.totalPrice += (item.Count * item.Product.Price);
+				}
 			}
 			shoppingCartVM.totalCartsWithShipping = shoppingCartVM.OrderHeader.totalPrice + 50;
-
 			return View(shoppingCartVM);
 		}
+
 		[HttpPost]
 		[ActionName("Checkout")]
 		[AutoValidateAntiforgeryToken]

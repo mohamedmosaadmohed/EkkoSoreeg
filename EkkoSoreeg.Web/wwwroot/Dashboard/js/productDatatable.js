@@ -12,7 +12,16 @@ function loaddata() {
             "url": "/Admin/Product/GetData",
             "type": "GET",
             "datatype": "json",
-            "dataSrc": "data"
+            "data": function (d) {
+                // Additional parameters to send to the server
+                d.searchTerm = d.search.value; // DataTables provides this search term
+                d.pageNumber = (d.start / d.length) + 1; // Calculating the page number
+                d.pageSize = d.length; // Page size
+            },
+            "dataSrc": function (json) {
+                // Parsing the data from the server response
+                return json.data;
+            }
         },
         "columns": [
             { "data": "name" },
@@ -43,8 +52,6 @@ function loaddata() {
         ]
     });
 }
-
-
 
 function DeleteItem(url) {
     Swal.fire({

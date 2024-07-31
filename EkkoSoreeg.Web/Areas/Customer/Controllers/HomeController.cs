@@ -24,7 +24,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		public IActionResult Index(int ? page)
 		{
 			var pageNumber = page ?? 1;
-			int pageSize = 6;
+			int pageSize = 8;
 			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages").ToPagedList(pageNumber,pageSize);
 			return View(products);
 		}
