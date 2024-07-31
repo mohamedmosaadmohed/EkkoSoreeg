@@ -12,7 +12,7 @@ namespace EkkoSoreeg.Entities.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
+		[Required]
         [MaxLength(450)]
         public string Name { get; set; }
         [MaxLength(2000)]

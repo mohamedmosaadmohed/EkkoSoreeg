@@ -141,7 +141,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			var product = _unitOfWork.Product.GetFirstorDefault(X => X.Id == Id, IncludeWord:
 				"TbCatagory,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize,ProductImages");
 			List<Product> productList = new List<Product>();
-            string productData = Request.Cookies[SD.WishKey];
+            var productData = HttpContext.Request.Cookies[SD.WishKey];
 			productList?.Add(product);
 			var settings = new JsonSerializerSettings
 			{
@@ -156,12 +156,26 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			});
 			return RedirectToAction("Wish", "Home");
         }
-		[HttpDelete]
 		public IActionResult DeleteFromWish(int wishid)
 		{
+			var productData = HttpContext.Request.Cookies[SD.WishKey];
+			if (!string.IsNullOrEmpty(productData))
+			{
+				var wishCartList = JsonConvert.DeserializeObject<List<Product>>(productData);
+				var item = wishCartList?.FirstOrDefault(X => X.Id == wishid);
+				if (item != null)
+				{
+					wishCartList?.Remove(item);
+					var updatedCookieWishData = JsonConvert.SerializeObject(wishCartList);
+					HttpContext.Response.Cookies.Append(SD.WishKey, updatedCookieWishData, new CookieOptions
+					{
+						HttpOnly = true,
+						Secure = true,
+						Expires = DateTimeOffset.Now.AddDays(7)
+					});
+				}
+			}
 			return RedirectToAction("Wish", "Home");
 		}
-
-
 	}
 }
