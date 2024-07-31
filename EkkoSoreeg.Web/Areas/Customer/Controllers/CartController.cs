@@ -5,6 +5,7 @@ using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
 using System.Security.Claims;
 
 namespace EkkoSoreeg.Web.Areas.Customer.Controllers
@@ -35,7 +36,8 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			if (claim != null)
 			{
 				// Retrieve items from the database
-				var dbCartItems = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product,Product.ProductImages").ToList();
+				var dbCartItems = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId ==
+				     claim.Value, IncludeWord: "Product,Product.ProductImages").ToList();
 				shoppingCartVM.shoppingCarts = dbCartItems;
 
 				// Calculate totals
@@ -47,7 +49,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			else
 			{
 				// Retrieve items from cookies for anonymous users
-				var cookieCartData = Request.Cookies["Cart"];
+				var cookieCartData = HttpContext.Request.Cookies[SD.CartKey];
 				if (!string.IsNullOrEmpty(cookieCartData))
 				{
 					var cookieCartItems = JsonConvert.DeserializeObject<List<ShoppingCart>>(cookieCartData);
@@ -66,7 +68,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			return View(shoppingCartVM);
 		}
 
-		public IActionResult plus(int cartid)
+		public IActionResult plus(int? cartid , Guid? guidid)
 		{
 			var claimsIdentity = User.Identity as ClaimsIdentity;
 			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
@@ -76,47 +78,114 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 				_unitOfWork.ShoppingCart.IncreaseCount(shoppingCart, 1);
 				_unitOfWork.Complete();
 			}
+            else
+            {
+                // User is not logged in; handle cookie-based cart
+                var cookieCartData = HttpContext.Request.Cookies[SD.CartKey];
+                if (!string.IsNullOrEmpty(cookieCartData))
+                {
+                    var cookieCartItems = JsonConvert.DeserializeObject<List<ShoppingCart>>(cookieCartData);
+                    var item = cookieCartItems?.FirstOrDefault(x => x.shoppingIdGuid.Equals(guidid));
+
+                    if (item != null)
+                    {
+                        item.Count += 1;
+                        // Serialize the updated cart items list back to a cookie
+                        var updatedCookieCartData = JsonConvert.SerializeObject(cookieCartItems);
+                        HttpContext.Response.Cookies.Append(SD.CartKey, updatedCookieCartData, new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            Expires = DateTimeOffset.Now.AddDays(7)
+                        });
+                    }
+                }
+            }
+            return RedirectToAction("Index");
+		}
+		public IActionResult Minus(int? cartid, Guid? guidid)
+		{
+			var claimsIdentity = User.Identity as ClaimsIdentity;
+			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+			if (claim != null)
+			{
+				var shoppingCart = _unitOfWork.ShoppingCart.GetFirstorDefault(x => x.shoppingId == cartid);
+				if (shoppingCart.Count <= 1)
+				{
+					_unitOfWork.ShoppingCart.Remove(shoppingCart);
+					var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count() - 1;
+					HttpContext.Session.SetInt32(SD.SessionKey, count);
+				}
+				_unitOfWork.ShoppingCart.decreaseCount(shoppingCart, 1);
+				_unitOfWork.Complete();
+			}
 			else
 			{
-				// Retrieve items from cookies for anonymous users
-				var cookieCartData = Request.Cookies["Cart"];
+				// User is not logged in; handle cookie-based cart
+				var cookieCartData = HttpContext.Request.Cookies[SD.CartKey];
 				if (!string.IsNullOrEmpty(cookieCartData))
 				{
 					var cookieCartItems = JsonConvert.DeserializeObject<List<ShoppingCart>>(cookieCartData);
-					var item = cookieCartItems?.Select(x => x.shoppingId == cartid);
-					
+					var item = cookieCartItems?.FirstOrDefault(x => x.shoppingIdGuid.Equals(guidid));
+
+					if (item != null)
+					{
+						item.Count -= 1;
+						// Serialize the updated cart items list back to a cookie
+						var updatedCookieCartData = JsonConvert.SerializeObject(cookieCartItems);
+						HttpContext.Response.Cookies.Append(SD.CartKey, updatedCookieCartData, new CookieOptions
+						{
+							HttpOnly = true,
+							Secure = true,
+							Expires = DateTimeOffset.Now.AddDays(7)
+						});
+					}
 				}
 			}
 			return RedirectToAction("Index");
 		}
-		public IActionResult Minus(int cartid)
+		public IActionResult Remove(int? cartid, Guid? guidid)
 		{
-			var shoppingCart = _unitOfWork.ShoppingCart.GetFirstorDefault(x => x.shoppingId == cartid);
-			if (shoppingCart.Count <= 1)
+			var claimsIdentity = User.Identity as ClaimsIdentity;
+			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+			if (claim != null)
 			{
+				var shoppingCart = _unitOfWork.ShoppingCart.GetFirstorDefault(x => x.shoppingId == cartid);
 				_unitOfWork.ShoppingCart.Remove(shoppingCart);
-				var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count() - 1;
+				_unitOfWork.Complete();
+				var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count();
 				HttpContext.Session.SetInt32(SD.SessionKey, count);
 			}
-			_unitOfWork.ShoppingCart.decreaseCount(shoppingCart, 1);
-			_unitOfWork.Complete();
-			return RedirectToAction("Index");
-		}
-		public IActionResult Remove(int cartid)
-		{
-			var shoppingCart = _unitOfWork.ShoppingCart.GetFirstorDefault(x => x.shoppingId == cartid);
-			_unitOfWork.ShoppingCart.Remove(shoppingCart);
-			_unitOfWork.Complete();
-			var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count();
-			HttpContext.Session.SetInt32(SD.SessionKey, count);
+			else
+			{
+				// User is not logged in; handle cookie-based cart
+				var cookieCartData = HttpContext.Request.Cookies[SD.CartKey];
+				if (!string.IsNullOrEmpty(cookieCartData))
+				{
+					var cookieCartItems = JsonConvert.DeserializeObject<List<ShoppingCart>>(cookieCartData);
+					var item = cookieCartItems?.FirstOrDefault(x => x.shoppingIdGuid.Equals(guidid));
+
+					if (item != null)
+					{
+					    cookieCartItems?.Remove(item);
+						var updatedCookieCartData = JsonConvert.SerializeObject(cookieCartItems);
+						HttpContext.Response.Cookies.Append(SD.CartKey, updatedCookieCartData, new CookieOptions
+						{
+							HttpOnly = true,
+							Secure = true,
+							Expires = DateTimeOffset.Now.AddDays(7)
+						});
+					}
+				}
+			}
 			return RedirectToAction("Index");
 		}
 		[HttpGet]
 		[Authorize]
 		public IActionResult Checkout()
 		{
-			var claimsIdentity = (ClaimsIdentity)User.Identity;
-			var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+			var claimsIdentity = User.Identity as ClaimsIdentity;
+			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 			shoppingCartVM = new ShoppingCartVM()
 			{
 				shoppingCarts = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product"),

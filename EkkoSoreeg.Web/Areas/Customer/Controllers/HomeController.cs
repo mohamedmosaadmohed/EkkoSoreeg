@@ -50,7 +50,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			var productFromDb = _unitOfWork.Product.GetFirstorDefault(x => x.Id == shoppingCart.ProductId, IncludeWord: "ProductImages");
 
 			// Determine if the user is logged in
-			var claimsIdentity = (ClaimsIdentity)User.Identity;
+			var claimsIdentity = User.Identity as ClaimsIdentity;
 			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 			shoppingCart.Product = productFromDb;
 
@@ -84,25 +84,40 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			}
 			else
 			{
-                var cartItems = HttpContext.Session.GetObjectFromJson<List<ShoppingCart>>(SD.CartKey) ?? new List<ShoppingCart>();
+                // Get cart items from cookie or initialize a new list if none found
+                var cartCookie = HttpContext.Request.Cookies[SD.CartKey];
+                var cartItems = !string.IsNullOrEmpty(cartCookie) ?
+                     JsonConvert.DeserializeObject<List<ShoppingCart>>(cartCookie) :
+                    new List<ShoppingCart>();
 
+                // Find if the item already exists in the cart
                 var cartItem = cartItems.FirstOrDefault(x => x.ProductId == shoppingCart.ProductId
                                                              && x.Color == shoppingCart.Color
                                                              && x.Size == shoppingCart.Size);
 
                 if (cartItem == null)
-                {
+				{
+                    shoppingCart.shoppingIdGuid = Guid.NewGuid();
                     cartItems.Add(shoppingCart);
                 }
+                        
                 else
-                {
                     cartItem.Count += shoppingCart.Count;
-                }
 
-                HttpContext.Session.SetObjectAsJson(SD.CartKey, cartItems, TimeSpan.FromDays(7));
-                HttpContext.Session.SetInt32(SD.SessionKey, cartItems.Sum(x => x.Count));
+                var settings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                };
+                var cartJson = JsonConvert.SerializeObject(cartItems, settings);
+                HttpContext.Response.Cookies.Append(SD.CartKey, cartJson, new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(7),
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Lax
+                });
+                HttpContext.Session.SetInt32(SD.SessionKey, cartJson.Count());
             }
-			TempData["Order"] = "Added to Cart Successfully";
+            TempData["Order"] = "Added to Cart Successfully";
 			return RedirectToAction("Details", "Home", new { area = "Customer", id = shoppingCart.ProductId });
 		}
 		public IActionResult AboutUs()

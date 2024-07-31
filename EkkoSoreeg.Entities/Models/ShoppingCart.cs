@@ -13,6 +13,8 @@ namespace EkkoSoreeg.Entities.Models
     {
         [Key]
         public int shoppingId { get; set; }
+        [ValidateNever]
+        public Guid shoppingIdGuid { get; set; }
         public int ProductId { get; set; }
         [ForeignKey("ProductId")]
         [ValidateNever]

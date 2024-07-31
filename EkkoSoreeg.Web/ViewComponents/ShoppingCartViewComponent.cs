@@ -34,11 +34,18 @@ namespace EkkoSoreeg.Web.ViewComponents
 			}
 			else
 			{
-                var cartItems = HttpContext.Session.GetObjectFromJson<List<ShoppingCart>>(SD.CartKey);
-                int cartCount = cartItems?.Count ?? 0;
+                var cartData = HttpContext.Request.Cookies[SD.CartKey];
+                int cartCount = 0;
+
+                if (!string.IsNullOrEmpty(cartData))
+                {
+				   var shoppingCartList =	JsonConvert.DeserializeObject<List<ShoppingCart>>(cartData);
+					cartCount = shoppingCartList.Count;
+                }
+
                 return View(cartCount);
             }
-		}
+        }
 
 	}
 }

@@ -1,5 +1,9 @@
-﻿
+﻿@using System.Security.Claims
 @model ShoppingCartVM
+@{
+	var claimsIdentity = User.Identity as ClaimsIdentity;
+	var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+}
 <!-- breadcrumb -->
 <div class="container mt-5">
 	<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
@@ -42,24 +46,48 @@
 										</td>
 										<td class="column-2">@item.Product.Name</td>
 										<td class="column-3">EGP @item.Product.Price</td>
-										<td class="column-4">
-											<div class="wrap-num-product flex-w m-l-auto m-r-0">
-												<a asp-action="Minus" asp-route-cartid="@item.shoppingId" class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-													<i class="fs-16 zmdi zmdi-minus"></i>
-												</a>
+										@if (claim != null)
+										{
+											<td class="column-4">
+												<div class="wrap-num-product flex-w m-l-auto m-r-0">
+													<a asp-action="Minus" asp-route-cartid="@item.shoppingId" class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+														<i class="fs-16 zmdi zmdi-minus"></i>
+													</a>
 
-												<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product1" value="@item.Count">
+													<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product1" value="@item.Count">
 
-												<a asp-action="plus" asp-route-cartid="@item.shoppingId" class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-													<i class="fs-16 zmdi zmdi-plus"></i>
+													<a asp-action="plus" asp-route-cartid="@item.shoppingId" class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+														<i class="fs-16 zmdi zmdi-plus"></i>
+													</a>
+												</div>
+											</td>
+											<td class="column-5">
+												<a asp-action="Remove" asp-route-cartid="@item.shoppingId" class="btn btn-danger">
+													<i class="fas fa-trash"></i>
 												</a>
-											</div>
-										</td>
-										<td class="column-5">
-											<a asp-action="Remove" asp-route-cartid="@item.shoppingId" class="btn btn-danger">
-												<i class="fas fa-trash"></i>
-											</a>
-										</td>
+											</td>
+										}
+										else
+										{
+											<td class="column-4">
+												<div class="wrap-num-product flex-w m-l-auto m-r-0">
+													<a asp-action="Minus" asp-route-guidid="@item.shoppingIdGuid" class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+														<i class="fs-16 zmdi zmdi-minus"></i>
+													</a>
+
+													<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product1" value="@item.Count">
+
+													<a asp-action="plus" asp-route-guidid="@item.shoppingIdGuid" class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+														<i class="fs-16 zmdi zmdi-plus"></i>
+													</a>
+												</div>
+											</td>
+											<td class="column-5">
+												<a asp-action="Remove" asp-route-guidid="@item.shoppingIdGuid" class="btn btn-danger">
+													<i class="fas fa-trash"></i>
+												</a>
+											</td>
+										}
 									</tr>
 								}
 							</table>
