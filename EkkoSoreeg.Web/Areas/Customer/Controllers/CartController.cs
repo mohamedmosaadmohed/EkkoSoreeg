@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Security.Claims;
+using System.Web;
 
 namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 {
@@ -144,17 +145,25 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			}
 			return RedirectToAction("Index");
 		}
-		public IActionResult Remove(int? cartid, Guid? guidid)
+		public IActionResult Remove(int? cartid, Guid? guidid, string returnUrl)
 		{
 			var claimsIdentity = User.Identity as ClaimsIdentity;
 			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+
 			if (claim != null)
 			{
-				var shoppingCart = _unitOfWork.ShoppingCart.GetFirstorDefault(x => x.shoppingId == cartid);
-				_unitOfWork.ShoppingCart.Remove(shoppingCart);
-				_unitOfWork.Complete();
-				var count = _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count();
-				HttpContext.Session.SetInt32(SD.SessionKey, count);
+				// User is logged in
+				if (cartid.HasValue)
+				{
+					var shoppingCart = _unitOfWork.ShoppingCart.GetFirstorDefault(x => x.shoppingId == cartid.Value);
+					if (shoppingCart != null)
+					{
+						_unitOfWork.ShoppingCart.Remove(shoppingCart);
+						_unitOfWork.Complete();
+						var count = _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count();
+						HttpContext.Session.SetInt32(SD.SessionKey, count);
+					}
+				}
 			}
 			else
 			{
@@ -167,7 +176,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 
 					if (item != null)
 					{
-					    cookieCartItems?.Remove(item);
+						cookieCartItems.Remove(item);
 						var updatedCookieCartData = JsonConvert.SerializeObject(cookieCartItems);
 						HttpContext.Response.Cookies.Append(SD.CartKey, updatedCookieCartData, new CookieOptions
 						{
@@ -178,8 +187,15 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 					}
 				}
 			}
-			return RedirectToAction("Index");
+
+			// Save and decode returnUrl in session
+			var decodedReturnUrl = HttpUtility.UrlDecode(returnUrl);
+			HttpContext.Session.SetString("ReturnUrl", decodedReturnUrl ?? "/");
+
+			// Redirect to returnUrl
+			return Redirect(HttpContext.Session.GetString("ReturnUrl") ?? "/");
 		}
+
 		[HttpGet]
 		[Authorize]
 		public IActionResult Checkout()

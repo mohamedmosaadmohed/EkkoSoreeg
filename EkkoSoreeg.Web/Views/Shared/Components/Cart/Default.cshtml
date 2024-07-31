@@ -1,6 +1,10 @@
 ﻿@using EkkoSoreeg.Entities.ViewModels
+@using System.Security.Claims
 @model ShoppingCartVM
-
+@{
+	var claimsIdentity = User.Identity as ClaimsIdentity;
+	var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+}
 
 <div class="wrap-header-cart js-panel-cart">
 	<div class="s-full js-hide-cart"></div>
@@ -21,23 +25,44 @@
 				@foreach (var item in Model.shoppingCarts)
 				{
 					<ul class="header-cart-wrapitem w-full">
-						<li class="header-cart-item flex-w flex-t m-b-12">
+						<li class="header-cart-item d-flex flex-t mb-3">
 							<div class="header-cart-item-img">
 								<img src="~/@item.Product.ProductImages.First().ImagePath" alt="IMG">
 							</div>
 
-							<div class="header-cart-item-txt p-t-8">
-								<a href="#" class="header-cart-item-name m-b-18 hov-cl1 trans-04">
-									@item.Product.Name
-								</a>
+							<div class="header-cart-item-txt d-flex justify-content-between align-items-center p-t-6 w-100">
+								<div>
+									<a href="/Customer/Home/Details/@item.Product.Id" class="header-cart-item-name m-b-4 hov-cl1 trans-04">
+										@item.Product.Name
+									</a>
 
-								<span class="header-cart-item-info">
-									@item.Product.Price
-								</span>
+									<span class="header-cart-item-info">
+										@item.Product.Price
+									</span>
+								</div>
+								@if(claim != null)
+								{
+									<a asp-controller="Cart" asp-action="Remove" asp-route-guidid="@item.shoppingIdGuid" class="delete">
+										<i class="fas fa-times"></i>
+									</a>
+								}
+								else
+								{
+									<a asp-controller="Cart" asp-action="Remove" asp-route-guidid="@item.shoppingIdGuid" class="delete">
+										<i class="fas fa-times"></i>
+									</a>
+								}
 							</div>
 						</li>
 					</ul>
 				}
+				<style>
+					.delete{
+						color:#000;
+						width:60px;
+						height: auto;
+					}
+				</style>
 				<div class="w-full">
 					<div class="header-cart-total w-full p-tb-40">
 						Total: @Model.totalCarts

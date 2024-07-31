@@ -21,6 +21,7 @@ builder.Services.AddControllersWithViews()
 	{
 		options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 	});
+builder.Services.AddHttpContextAccessor();
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
