@@ -19,7 +19,7 @@ namespace EkkoSoreeg.Entities.ViewModels
         [ValidateNever]
         public IEnumerable<SelectListItem> SizeList { get; set; }
         [ValidateNever]
-        public IEnumerable<SelectListItem> ImageList { get; set; }
+        public List<ProductImage> ImageList { get; set; }
         public List<int> SelectedColors { get; set; }
         public List<int> SelectedSizes { get; set; }
     }

@@ -115,17 +115,17 @@
         {
             <div class="col-lg-3">
                 <div class="image-container">
-                    <img src="~/@item.Text" class="img-fluid" />
-                    <button type="button" class="edit-icon" onclick="triggerFileInputForEdit('@item.Value')">
+                    <img src="~/@item.ImagePath" class="img-fluid" />
+                    <button type="button" class="edit-icon" onclick="triggerFileInputForEdit('@item.Id')">
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button type="button" class="trash-icon" onclick="confirmDeleteImage('@item.Value', '@Model.Product.Id')">
+                    <button type="button" class="trash-icon" onclick="confirmDeleteImage('@item.Id', '@Model.Product.Id')">
                         <i class="bi bi-trash"></i>
                     </button>
-                    <form id="editForm-@item.Value" method="post" asp-action="UpdateImage" enctype="multipart/form-data" style="display:none;">
-                        <input type="hidden" name="imageId" value="@item.Value" />
+                    <form id="editForm-@item.Id" method="post" asp-action="UpdateImage" enctype="multipart/form-data" style="display:none;">
+                        <input type="hidden" name="imageId" value="@item.Id" />
                         <input type="hidden" name="productId" value="@Model.Product.Id" />
-                        <input type="file" name="file" accept="image/*" id="fileInput-@item.Value" style="display:none;" onchange="submitEditForm('@item.Value')" />
+                        <input type="file" name="file" accept="image/*" id="fileInput-@item.Id" style="display:none;" onchange="submitEditForm('@item.Id')" />
                     </form>
                 </div>
             </div>

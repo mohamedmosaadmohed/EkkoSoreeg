@@ -195,11 +195,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                     Text = X.Name,
                     Value = X.Id.ToString()
                 }),
-                ImageList = _context.ProductImages.Select(X => new SelectListItem
-                {
-                    Text = X.ImagePath,
-                    Value = X.Id.ToString()
-                }),
+                ImageList = _context.ProductImages.Where(X => X.ProductId == id).ToList(),
                 SelectedColors = selectedColors,
                 SelectedSizes = selectedSizes
             };
