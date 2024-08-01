@@ -35,14 +35,22 @@
 									<a href="/Customer/Home/Details/@item.Product.Id" class="header-cart-item-name m-b-4 hov-cl1 trans-04">
 										@item.Product.Name
 									</a>
-
-									<span class="header-cart-item-info">
-										@item.Product.Price
-									</span>
+									@if(item.Product.OfferPrice != 0)
+									{
+										<span class="header-cart-item-info">
+											@item.Product.OfferPrice
+										</span>
+									}
+									else
+									{
+										<span class="header-cart-item-info">
+											@item.Product.Price
+										</span>
+									}
 								</div>
 								@if(claim != null)
 								{
-									<a asp-controller="Cart" asp-action="Remove" asp-route-guidid="@item.shoppingIdGuid" class="delete">
+									<a asp-controller="Cart" asp-action="Remove" asp-route-cartid="@item.shoppingId" class="delete">
 										<i class="fas fa-times"></i>
 									</a>
 								}

@@ -93,7 +93,14 @@
                                 <div>
                                     <h6 class="my-0">@item.Product.Name (@item.Count)</h6>
                                 </div>
-                                <span class="text-muted">EGP @(item.Product.Price * item.Count)</span>
+                                @if(item.Product.OfferPrice != 0)
+                                {
+                                    <span class="text-muted">EGP @(item.Product.OfferPrice * item.Count)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">EGP @(item.Product.Price * item.Count)</span>
+                                }
                             </li>
                         }
                     </ul>

@@ -48,6 +48,7 @@ builder.Services.AddTransient<IEmailSender>(provider => new EmailSender(
         isBodyHtml: true
     ));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<CartService>();
 // Set the EPPlus license context to NonCommercial
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -75,10 +76,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession();
+app.UseMiddleware<CartMiddleware>();
+
 app.MapRazorPages();
 
 app.MapControllerRoute(
@@ -95,5 +97,4 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     SeedData.Initialize(services).Wait();
 }
-
 app.Run();

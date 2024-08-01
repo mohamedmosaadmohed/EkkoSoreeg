@@ -53,11 +53,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 			var claimsIdentity = User.Identity as ClaimsIdentity;
 			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 			shoppingCart.Product = productFromDb;
-
-			if (productFromDb.OfferPrice != 0)
-			{
-				shoppingCart.Product.Price = productFromDb.OfferPrice;
-			}
+            shoppingCart.shoppingIdGuid = Guid.NewGuid();
 
 			if (claim != null)
 			{

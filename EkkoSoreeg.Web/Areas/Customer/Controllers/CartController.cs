@@ -44,7 +44,10 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 				// Calculate totals
 				foreach (var item in dbCartItems)
 				{
-					shoppingCartVM.totalCarts += (item.Count * item.Product.Price);
+					if (item.Product.OfferPrice != 0)
+						shoppingCartVM.totalCarts += (item.Count * item.Product.OfferPrice);
+					else
+						shoppingCartVM.totalCarts += (item.Count * item.Product.Price);
 				}
 			}
 			else
@@ -59,7 +62,10 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 					// Calculate totals
 					foreach (var item in cookieCartItems)
 					{
-						shoppingCartVM.totalCarts += (item.Count * item.Product.Price);
+						if (item.Product.OfferPrice != 0)
+							shoppingCartVM.totalCarts += (item.Count * item.Product.OfferPrice);
+						else
+							shoppingCartVM.totalCarts += (item.Count * item.Product.Price);
 					}
 				}
 			}
@@ -145,7 +151,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			}
 			return RedirectToAction("Index");
 		}
-		public IActionResult Remove(int? cartid, Guid? guidid, string returnUrl)
+		public IActionResult Remove(int? cartid, Guid? guidid)
 		{
 			var claimsIdentity = User.Identity as ClaimsIdentity;
 			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
@@ -187,13 +193,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 					}
 				}
 			}
-
-			// Save and decode returnUrl in session
-			var decodedReturnUrl = HttpUtility.UrlDecode(returnUrl);
-			HttpContext.Session.SetString("ReturnUrl", decodedReturnUrl ?? "/");
-
-			// Redirect to returnUrl
-			return Redirect(HttpContext.Session.GetString("ReturnUrl") ?? "/");
+			return RedirectToAction("Index");
 		}
 
 		[HttpGet]
@@ -233,14 +233,27 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 						}
 						else
 						{
-							item.ApplicationUserId = claim.Value;
-							_unitOfWork.ShoppingCart.Add(item);
+                            var newCartItem = new ShoppingCart
+                            {
+                                shoppingIdGuid = item.shoppingIdGuid,
+                                ProductId = item.ProductId,
+                                Color = item.Color,
+                                Size = item.Size,
+                                ApplicationUserId = claim.Value,
+                                Count = item.Count,
+                            };
+                            item.ApplicationUserId = claim.Value;
+							_unitOfWork.ShoppingCart.Add(newCartItem);
 						}
 					}
+					shoppingCartVM.shoppingCarts = cartItemsFromCookie;
 
-					_unitOfWork.Complete();
+
+                    _unitOfWork.Complete();
 					Response.Cookies.Delete(SD.CartKey);
-				}
+                    HttpContext.Session.SetInt32(SD.SessionKey,
+                           _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value).ToList().Count());
+                }
 
 				shoppingCartVM.OrderHeader.FirstName = shoppingCartVM.OrderHeader.applicationUser.FirstName;
 				shoppingCartVM.OrderHeader.LastName = shoppingCartVM.OrderHeader.applicationUser.LastName;
@@ -253,7 +266,10 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 
 				foreach (var item in shoppingCartVM.shoppingCarts)
 				{
-					shoppingCartVM.OrderHeader.totalPrice += (item.Count * item.Product.Price);
+					if (item.Product.OfferPrice != 0)
+						shoppingCartVM.OrderHeader.totalPrice += (item.Count * item.Product.OfferPrice);
+					else
+						shoppingCartVM.OrderHeader.totalPrice += (item.Count * item.Product.Price);
 				}
 			}
 			shoppingCartVM.totalCartsWithShipping = shoppingCartVM.OrderHeader.totalPrice + 50;
@@ -266,12 +282,11 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 		[Authorize]
 		public IActionResult PostCheckout(ShoppingCartVM shoppingCartvm)
 		{
-			var claimsIdentity = (ClaimsIdentity)User.Identity;
-			var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+			var claimsIdentity = User.Identity as ClaimsIdentity;
+			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
 			shoppingCartvm.shoppingCarts = _unitOfWork.ShoppingCart
 				.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product");
-
 			shoppingCartvm.OrderHeader.orderStatus = SD.Pending;
 			shoppingCartvm.OrderHeader.paymentStatus = SD.Pending;
 			shoppingCartvm.OrderHeader.Downloader = false;
@@ -288,7 +303,12 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 
 			foreach (var item in shoppingCartvm.shoppingCarts)
 			{
-				shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.Price);
+				item.Product.Stock --;
+				item.Product.SaleNumber ++;
+				if(item.Product.OfferPrice != 0)
+					shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.OfferPrice);
+				else
+					shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.Price);
 			}
 			shoppingCartvm.totalCartsWithShipping = shoppingCartvm.OrderHeader.totalPrice + 50;
 
