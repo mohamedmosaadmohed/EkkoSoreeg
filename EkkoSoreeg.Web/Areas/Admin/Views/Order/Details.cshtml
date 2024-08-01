@@ -119,8 +119,15 @@
                                     <strong>@Model.orderDetails[i].product.Name</strong>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <strong>Price</strong>
-                                    <strong>EGP @Model.orderDetails[i].product.Price</strong>
+                                    <strong>Price (@Model.orderDetails[i].Count)</strong>
+                                    @if (@Model.orderDetails[i].product.OfferPrice != 0)
+                                    {
+                                        <strong>EGP @(Model.orderDetails[i].product.OfferPrice * Model.orderDetails[i].Count)</strong>
+                                    }
+                                    else
+                                    {
+                                        <strong>EGP @Model.orderDetails[i].product.Price</strong>
+                                    }
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Count</strong>

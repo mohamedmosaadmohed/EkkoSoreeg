@@ -47,8 +47,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="email">Email <span class="text-muted"></span></label>
-                        <input type="email" class="form-control" id="email" asp-for="@Model.OrderHeader.Email"/>
-                        <span asp-validation-for="@Model.OrderHeader.Email" class="text-danger"></span>
+                        <input type="email" disabled class="form-control" id="email" asp-for="@Model.OrderHeader.Email" />
                     </div>
                 </div>
                 <div class="row">

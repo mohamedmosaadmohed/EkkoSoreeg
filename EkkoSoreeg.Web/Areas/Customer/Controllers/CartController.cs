@@ -292,9 +292,12 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			shoppingCartvm.OrderHeader.Downloader = false;
 			shoppingCartvm.OrderHeader.orderDate = DateTime.Now;
 			shoppingCartvm.OrderHeader.ApplicationUserId = claim.Value;
-
-			var applicationUser = _unitOfWork.ApplicationUser.GetFirstorDefault(u => u.Id == claim.Value);
+            
+            var applicationUser = _unitOfWork.ApplicationUser.GetFirstorDefault(u => u.Id == claim.Value);
 			// Update the user with the data from shoppingCartvm
+			shoppingCartvm.OrderHeader.Email = applicationUser.Email;
+            applicationUser.FirstName = shoppingCartvm.OrderHeader.FirstName;
+			applicationUser.LastName = shoppingCartvm.OrderHeader.LastName;
 			applicationUser.PhoneNumber = shoppingCartvm.OrderHeader.PhoneNumber;
 			applicationUser.AdditionalPhoneNumber = shoppingCartvm.OrderHeader.AdditionalPhoneNumber;
 			applicationUser.Address = shoppingCartvm.OrderHeader.Address;
@@ -303,8 +306,9 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 
 			foreach (var item in shoppingCartvm.shoppingCarts)
 			{
-				item.Product.Stock --;
+				item.Product.Stock = (item.Product.Stock - item.Count);
 				item.Product.SaleNumber ++;
+
 				if(item.Product.OfferPrice != 0)
 					shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.OfferPrice);
 				else
