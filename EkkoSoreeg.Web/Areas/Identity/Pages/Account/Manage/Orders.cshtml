@@ -5,7 +5,7 @@
     ViewData["Title"] = "Orders";
     ViewData["ActivePage"] = "Orders";
 }
-
+<partial name="_Toaster" />
 <section class="py-4">
     <div class="container px-2 px-lg-5 mt-5">
         <div class="row">
@@ -32,7 +32,14 @@
                                             <img src="~/@orderDetails.First().product.ProductImages.First().ImagePath" alt="Product Image" />
                                             <div class="order-details">
                                                 <h5>@orderDetails.First().product.Name</h5>
-                                                <p>@orderDetails.First().product.Price EGP</p>
+                                                @if (@orderDetails.First().product.OfferPrice != 0)
+                                                {
+                                                    <p>@orderDetails.First().product.OfferPrice EGP</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@orderDetails.First().product.Price EGP</p>
+                                                }
                                             </div>
                                             <div class="order-status">
                                                 <span class="badge badge-info">@order.orderStatus</span>
@@ -52,8 +59,11 @@
                                                         <div class="col-sm-12 empty-cart-cls text-center">
                                                             <img src="https://i.imgur.com/dCdflKN.png" width="130" height="130" class="img-fluid mb-4 mr-3">
                                                             <h3><strong>Your Orders is Empty</strong></h3>
-                                                            <h4>Add something to make me happy</h4>
-                                                            <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-primary cart-btn-transform m-3">Continue Shopping</a>
+                                                            <div class="d-flex justify-content-center mt-4" style="border-radius:20px">
+                                                                <a asp-area="Customer" asp-controller="Shop" asp-action="Index" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+                                                                    Shop Now
+                                                                </a>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -74,7 +84,14 @@
                                             <img src="~/@orderDetails.First().product.ProductImages.First().ImagePath" alt="Product Image" />
                                             <div class="order-details">
                                                 <h5>@orderDetails.First().product.Name</h5>
-                                                <p>@orderDetails.First().product.Price EGP</p>
+                                                @if (@orderDetails.First().product.OfferPrice != 0)
+                                                {
+                                                    <p>@orderDetails.First().product.OfferPrice EGP</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@orderDetails.First().product.Price EGP</p>
+                                                }
                                             </div>
                                             <div class="order-status">
                                                 @if (@order.orderStatus == SD.Cancelled)
@@ -101,8 +118,11 @@
                                                         <div class="col-sm-12 empty-cart-cls text-center">
                                                             <img src="https://i.imgur.com/dCdflKN.png" width="130" height="130" class="img-fluid mb-4 mr-3">
                                                             <h3><strong>Your Orders is Empty</strong></h3>
-                                                            <h4>Add something to make me happy</h4>
-                                                            <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-primary cart-btn-transform m-3">Continue Shopping</a>
+                                                            <div class="d-flex justify-content-center mt-4" style="border-radius:20px">
+                                                                <a asp-area="Customer" asp-controller="Shop" asp-action="Index" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+                                                                    Shop Now
+                                                                </a>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

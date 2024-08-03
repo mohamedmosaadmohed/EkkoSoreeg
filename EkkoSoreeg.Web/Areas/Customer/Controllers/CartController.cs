@@ -74,7 +74,6 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 
 			return View(shoppingCartVM);
 		}
-
 		public IActionResult plus(int? cartid , Guid? guidid)
 		{
 			var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -276,69 +275,109 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 			return View(shoppingCartVM);
 		}
 
-		[HttpPost]
-		[ActionName("Checkout")]
-		[AutoValidateAntiforgeryToken]
-		[Authorize]
-		public IActionResult PostCheckout(ShoppingCartVM shoppingCartvm)
-		{
-			var claimsIdentity = User.Identity as ClaimsIdentity;
-			var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+        [HttpPost]
+        [ActionName("Checkout")]
+        [AutoValidateAntiforgeryToken]
+        [Authorize]
+        public IActionResult PostCheckout(ShoppingCartVM shoppingCartvm)
+        {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
-			shoppingCartvm.shoppingCarts = _unitOfWork.ShoppingCart
-				.GetAll(x => x.ApplicationUserId == claim.Value, IncludeWord: "Product");
-			shoppingCartvm.OrderHeader.orderStatus = SD.Pending;
-			shoppingCartvm.OrderHeader.paymentStatus = SD.Pending;
-			shoppingCartvm.OrderHeader.Downloader = false;
-			shoppingCartvm.OrderHeader.orderDate = DateTime.Now;
-			shoppingCartvm.OrderHeader.ApplicationUserId = claim.Value;
-            
-            var applicationUser = _unitOfWork.ApplicationUser.GetFirstorDefault(u => u.Id == claim.Value);
-			// Update the user with the data from shoppingCartvm
-			shoppingCartvm.OrderHeader.Email = applicationUser.Email;
-            applicationUser.FirstName = shoppingCartvm.OrderHeader.FirstName;
-			applicationUser.LastName = shoppingCartvm.OrderHeader.LastName;
-			applicationUser.PhoneNumber = shoppingCartvm.OrderHeader.PhoneNumber;
-			applicationUser.AdditionalPhoneNumber = shoppingCartvm.OrderHeader.AdditionalPhoneNumber;
-			applicationUser.Address = shoppingCartvm.OrderHeader.Address;
-			applicationUser.Region = shoppingCartvm.OrderHeader.Region;
-			applicationUser.City = shoppingCartvm.OrderHeader.City;
+            if (claim == null)
+            {
+                // Handle the case where the claim is null
+                return RedirectToAction("Index", "Home");
+            }
 
-			foreach (var item in shoppingCartvm.shoppingCarts)
-			{
-				item.Product.Stock = (item.Product.Stock - item.Count);
-				item.Product.SaleNumber ++;
+            // Ensure shoppingCarts is populated
+            shoppingCartvm.shoppingCarts = _unitOfWork.ShoppingCart.GetAll(
+                x => x.ApplicationUserId == claim.Value,
+                IncludeWord: "Product"
+            ).ToList();
 
-				if(item.Product.OfferPrice != 0)
-					shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.OfferPrice);
-				else
-					shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.Price);
-			}
-			shoppingCartvm.totalCartsWithShipping = shoppingCartvm.OrderHeader.totalPrice + 50;
+            if (ModelState.IsValid)
+            {
+                shoppingCartvm.OrderHeader.orderStatus = SD.Pending;
+                shoppingCartvm.OrderHeader.paymentStatus = SD.Pending;
+                shoppingCartvm.OrderHeader.Downloader = false;
+                shoppingCartvm.OrderHeader.ApplicationUserId = claim.Value;
 
-			_unitOfWork.OrderHeader.Add(shoppingCartvm.OrderHeader);
-			_unitOfWork.Complete();
+                var applicationUser = _unitOfWork.ApplicationUser.GetFirstorDefault(u => u.Id == claim.Value);
 
-			foreach (var item in shoppingCartvm.shoppingCarts)
-			{
-				OrderDetails orderDetails = new OrderDetails()
-				{
-					productId = item.ProductId,
-					OrderHeaderId = shoppingCartvm.OrderHeader.Id,
-					price = item.Product.Price,
-					Count = item.Count,
-					Color = item.Color,
-					Size = item.Size,
-				};
-				_unitOfWork.OrderDetails.Add(orderDetails);
-				_unitOfWork.Complete();
-			}
-			_unitOfWork.ShoppingCart.RemoveRange(shoppingCartvm.shoppingCarts);
-			_unitOfWork.Complete();
-            HttpContext.Session.SetInt32(SD.SessionKey,
-               _unitOfWork.ShoppingCart.GetAll(X => X.ApplicationUserId == claim.Value).ToList().Count());
-            TempData["Order"] = "Thank you for Placed Order";
-			return RedirectToAction("Index", "Home");
-		}
-	}
+                // Update the user with the data from shoppingCartvm
+                shoppingCartvm.OrderHeader.Email = applicationUser.Email;
+                applicationUser.FirstName = shoppingCartvm.OrderHeader.FirstName;
+                applicationUser.LastName = shoppingCartvm.OrderHeader.LastName;
+                applicationUser.PhoneNumber = shoppingCartvm.OrderHeader.PhoneNumber;
+                applicationUser.AdditionalPhoneNumber = shoppingCartvm.OrderHeader.AdditionalPhoneNumber;
+                applicationUser.Address = shoppingCartvm.OrderHeader.Address;
+                applicationUser.Region = shoppingCartvm.OrderHeader.Region;
+                applicationUser.City = shoppingCartvm.OrderHeader.City;
+
+                foreach (var item in shoppingCartvm.shoppingCarts)
+                {
+                    item.Product.Stock -= item.Count;
+                    item.Product.SaleNumber++;
+
+                    if (item.Product.OfferPrice != 0)
+                        shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.OfferPrice);
+                    else
+                        shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.Price);
+                }
+
+                shoppingCartvm.totalCartsWithShipping = shoppingCartvm.OrderHeader.totalPrice + 50;
+
+                _unitOfWork.OrderHeader.Add(shoppingCartvm.OrderHeader);
+                _unitOfWork.Complete();
+
+                foreach (var item in shoppingCartvm.shoppingCarts)
+                {
+                    decimal orderPrice = item.Product.OfferPrice != 0 ? item.Product.OfferPrice : item.Product.Price;
+
+                    OrderDetails orderDetails = new OrderDetails()
+                    {
+                        productId = item.ProductId,
+                        OrderHeaderId = shoppingCartvm.OrderHeader.Id,
+                        price = orderPrice,
+                        Count = item.Count,
+                        Color = item.Color,
+                        Size = item.Size,
+                    };
+                    _unitOfWork.OrderDetails.Add(orderDetails);
+                    _unitOfWork.Complete();
+                }
+
+                _unitOfWork.ShoppingCart.RemoveRange(shoppingCartvm.shoppingCarts);
+                _unitOfWork.Complete();
+                HttpContext.Session.SetInt32(SD.SessionKey, _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value).Count());
+                TempData["Order"] = "Thank you for placing your order";
+                return RedirectToAction("Index", "Home");
+            }
+            shoppingCartvm.OrderHeader = new OrderHeader
+            {
+                applicationUser = _unitOfWork.ApplicationUser.GetFirstorDefault(x => x.Id == claim.Value)
+            };
+            shoppingCartvm.OrderHeader.FirstName = shoppingCartvm.OrderHeader.applicationUser.FirstName;
+            shoppingCartvm.OrderHeader.LastName = shoppingCartvm.OrderHeader.applicationUser.LastName;
+            shoppingCartvm.OrderHeader.Email = shoppingCartvm.OrderHeader.applicationUser.Email;
+            shoppingCartvm.OrderHeader.PhoneNumber = shoppingCartvm.OrderHeader.applicationUser.PhoneNumber;
+            shoppingCartvm.OrderHeader.AdditionalPhoneNumber = shoppingCartvm.OrderHeader.applicationUser.AdditionalPhoneNumber;
+            shoppingCartvm.OrderHeader.Address = shoppingCartvm.OrderHeader.applicationUser.Address;
+            shoppingCartvm.OrderHeader.Region = shoppingCartvm.OrderHeader.applicationUser.Region;
+            shoppingCartvm.OrderHeader.City = shoppingCartvm.OrderHeader.applicationUser.City;
+
+            foreach (var item in shoppingCartvm.shoppingCarts)
+            {
+                if (item.Product.OfferPrice != 0)
+                    shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.OfferPrice);
+                else
+                    shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.Price);
+            }
+            shoppingCartvm.totalCartsWithShipping = shoppingCartvm.OrderHeader.totalPrice + 50;
+
+            return View(shoppingCartvm);
+        }
+
+    }
 }

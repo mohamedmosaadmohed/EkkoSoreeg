@@ -17,63 +17,66 @@
 <form class="bg0 p-t-75 p-b-85" method="post">
 	<div class="container">
 		<div class="row">
-			<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+            <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="firstName">FirstName</label>
-                        <input type="text" class="form-control" id="firstname" asp-for="@Model.OrderHeader.FirstName"/>
+                        <label for="firstname">First Name</label>
+                        <input type="text" class="form-control" id="firstname" asp-for="OrderHeader.FirstName" />
+                        <span asp-validation-for="OrderHeader.FirstName" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="firstName">LastName</label>
-                        <input type="text" class="form-control" id="lastname" asp-for="@Model.OrderHeader.LastName" />
+                        <label for="lastname">Last Name</label>
+                        <input type="text" class="form-control" id="lastname" asp-for="OrderHeader.LastName" />
+                        <span asp-validation-for="OrderHeader.LastName" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="firstName">PhoneNumber</label>
-                        <input type="tel" class="form-control" id="phonenumber" asp-for="@Model.OrderHeader.PhoneNumber" />
-                        <span asp-validation-for="@Model.OrderHeader.PhoneNumber" class="text-danger"></span>
+                        <label for="phonenumber">Phone Number</label>
+                        <input type="tel" class="form-control" id="phonenumber" asp-for="OrderHeader.PhoneNumber" />
+                        <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="firstName">Additional Phone</label>
-                        <input type="tel" class="form-control" id="phonenumber" asp-for="@Model.OrderHeader.AdditionalPhoneNumber" />
+                        <label for="additionalphonenumber">Additional Phone</label>
+                        <input type="tel" class="form-control" id="additionalphonenumber" asp-for="OrderHeader.AdditionalPhoneNumber" />
+                        <span asp-validation-for="OrderHeader.AdditionalPhoneNumber" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="address">Address</label>
-                        <input type="text" class="form-control" id="address" asp-for="@Model.OrderHeader.Address" />
-                        <span asp-validation-for="@Model.OrderHeader.Address" class="text-danger"></span>
+                        <input type="text" class="form-control" id="address" asp-for="OrderHeader.Address" />
+                        <span asp-validation-for="OrderHeader.Address" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="email">Email <span class="text-muted"></span></label>
-                        <input type="email" disabled class="form-control" id="email" asp-for="@Model.OrderHeader.Email" />
+                        <input type="email" disabled class="form-control" id="email" asp-for="OrderHeader.Email" />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="address">Additional Information (Notes)</label>
-                        <input type="text" class="form-control" id="additionalinformation" asp-for="@Model.OrderHeader.AdditionalInformation"/>
+                        <label for="additionalinformation">Additional Information (Notes)</label>
+                        <input type="text" class="form-control" id="additionalinformation" asp-for="OrderHeader.AdditionalInformation" />
+                        <span asp-validation-for="OrderHeader.AdditionalInformation" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="region">Region</label>
-                        <select class="form-control" id="region" asp-for="@Model.OrderHeader.Region">
+                        <select class="form-control" id="region" asp-for="OrderHeader.Region">
                             <option value="">Select Region</option>
                         </select>
-                        <span asp-validation-for="@Model.OrderHeader.Region" class="text-danger"></span>
+                        <span asp-validation-for="OrderHeader.Region" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="city">City</label>
-                        <select class="form-control" id="city" asp-for="@Model.OrderHeader.City">
+                        <select class="form-control" id="city" asp-for="OrderHeader.City">
                             <option value="">Select City</option>
                         </select>
-                        <span asp-validation-for="@Model.OrderHeader.City" class="text-danger"></span>
+                        <span asp-validation-for="OrderHeader.City" class="text-danger"></span>
                     </div>
-
                 </div>
-			</div>
+            </div>
             <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
                 <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
                     <h4 class="mtext-109 cl2 p-b-30">
@@ -128,6 +131,30 @@
 </form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Function to hide validation error messages
+            function hideValidationMessage(inputId, validationName) {
+                var input = document.getElementById(inputId);
+                var validationSpan = document.querySelector("span[data-valmsg-for='" + validationName + "']");
+                if (input && validationSpan) {
+                    input.addEventListener("input", function () {
+                        validationSpan.style.display = "none";
+                    });
+                }
+            }
+
+            // Applying the function to all relevant fields
+            hideValidationMessage("firstname", "OrderHeader.FirstName");
+            hideValidationMessage("lastname", "OrderHeader.LastName");
+            hideValidationMessage("phonenumber", "OrderHeader.PhoneNumber");
+            hideValidationMessage("additionalphonenumber", "OrderHeader.AdditionalPhoneNumber");
+            hideValidationMessage("address", "OrderHeader.Address");
+            hideValidationMessage("region", "OrderHeader.Region");
+            hideValidationMessage("city", "OrderHeader.City");
+            hideValidationMessage("additionalinformation", "OrderHeader.AdditionalInformation");
+        });
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

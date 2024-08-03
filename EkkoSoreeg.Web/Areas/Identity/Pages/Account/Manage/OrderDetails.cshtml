@@ -1,8 +1,10 @@
 ﻿@page "{id:int}"
+@using EkkoSoreeg.Utilities
 @using EkkoSoreeg.Web.Pages.Orders
 @model OrderDetailsModel
 @{
     ViewData["Title"] = "Order Details";
+    DateTime newDate = Model.OrderHeader.orderDate.AddDays(5);
 }
 <section class="py-4">
     <div class="container px-2 px-lg-5 mt-5">
@@ -13,24 +15,30 @@
                 @if (Model.OrderHeader != null && Model.OrderDetails != null && Model.OrderDetails.Any())
                 {
                     <div class="order-summary card mb-3">
-                        <div class="card-header">
-                            <h3>Order Number: @Model.OrderHeader.Id</h3>
-                            <p>Count: @Model.OrderDetails.First().Count</p>
-                            <p>Order Date: @Model.OrderHeader.orderDate.ToShortDateString()</p>
+                        <div class="card-header" style="text-align:center">
+                            <h3 class="mb-1"><strong>Order Number:</strong> @Model.OrderHeader.Id</h3>
+                            <p><strong>Order Date:</strong> @Model.OrderHeader.orderDate.ToShortDateString()</p>
+                            <br />
+                            <p>
+                                <strong>Order Shipping: between @Model.OrderHeader.orderDate.ToShortDateString() to @newDate.ToShortDateString()</strong>
+                            </p>
                         </div>
                         <div class="order-details-page">
-                            <div class="order-summary">
-                                <div class="product-details">
-                                    <div class="product-image">
-                                        <img src="~/@Model.OrderDetails.First().product.ProductImages.First().ImagePath" alt="Product Image" class="img-fluid" />
-                                    </div>
-                                    <div class="product-info pl-2">
-                                        <h5 class="product-name">@Model.OrderDetails.First().product.Name</h5>
-                                        <p class="product-price">@Model.OrderDetails.First().product.Price EGP</p>
-                                        <p class="product-quantity">Quantity: @Model.OrderDetails.First().Count</p>
+                            @foreach(var item  in Model.OrderDetails)
+                            {
+                                <div class="order-summary">
+                                    <div class="product-details">
+                                        <div class="product-image">
+                                            <img src="~/@item.product.ProductImages.First().ImagePath" alt="Product Image" class="img-fluid" />
+                                        </div>
+                                        <div class="product-info pl-2">
+                                            <h5 class="product-name">@item.product.Name</h5>
+                                             <p class="product-price">@item.price EGP</p>
+                                            <p class="product-quantity">Count: @item.Count</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                         <hr />
                         <div class="shipping-payment-info row">
@@ -58,7 +66,7 @@
                                     </tr>
                                     <tr>
                                         <td>Total Products</td>
-                                        <td>@Model.OrderDetails.First().price EGP</td>
+                                        <td>@Model.OrderHeader.totalPrice EGP</td>
                                     </tr>
                                     <tr>
                                         <td>Shipping Cost</td>
@@ -66,12 +74,24 @@
                                     </tr>
                                     <tr>
                                         <td>Total</td>
-                                        <td>@Model.OrderHeader.totalPrice EGP</td>
+                                        <td>@(Model.OrderHeader.totalPrice + 50) EGP</td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
+                        <div class="justify-content-center" style="text-align:center;">
+                            @{
+                                var status = Model.OrderHeader.orderStatus;
+                            }
+                            @if (status == SD.Pending || status == SD.Approve || status == SD.Shipped)
+                            {
+                                <form method="post" asp-page-handler="CancelOrder" asp-route-id="@Model.OrderHeader.Id">
+                                    <button type="submit" class="btn btn-danger">Cancel Order</button>
+                                </form>
+                            }
+                        </div>
                     </div>
+
                 }
                 else
                 {

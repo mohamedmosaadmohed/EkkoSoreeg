@@ -187,7 +187,6 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
-
         public IActionResult OnPostUpdateOrderDetails()
         {
             foreach (var detail in OrderVM.orderDetails)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using EkkoSoreeg.Entities.ValidateDataAnotation;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,10 +13,11 @@ namespace EkkoSoreeg.Entities.Models
 	{
 		[Key]
         public int Id { get; set; }
+        [ValidateNever]
         public string ApplicationUserId { get; set; }
         [ValidateNever]
 		public ApplicationUser applicationUser { get; set; }
-        public DateTime orderDate { get; set; }
+        public DateTime orderDate { get; set; } = DateTime.UtcNow;
         public DateTime shippingDate { get; set; }
         public decimal totalPrice { get; set; }
         public string? orderStatus { get; set; }
@@ -30,24 +32,30 @@ namespace EkkoSoreeg.Entities.Models
 		public string? paymentIntentId { get; set; }
 
         // Data For User
-        [Required]
-        public string FirstName { get; set; }
-        [Required]
-        public string LastName { get; set; }
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        [Required]
-        public string Address { get; set; }
+        [Required(ErrorMessage = "First Name is required.")]
+        public string? FirstName { get; set; }
+
+        [Required(ErrorMessage = "Last Name is required.")]
+        public string? LastName { get; set; }
+        [ValidateNever]
+        public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Address is required.")]
+        public string? Address { get; set; }
+
         public string? AdditionalInformation { get; set; }
-        [Required]
-        public string Region { get; set; }
-        [Required]
-        public string City { get; set; }
-        [Required]
-        [Phone]
-        public string PhoneNumber { get; set; }
-        [Phone]
+
+        [Required(ErrorMessage = "Region is required.")]
+        public string? Region { get; set; }
+
+        [Required(ErrorMessage = "City is required.")]
+        public string? City { get; set; }
+
+        [Required(ErrorMessage = "Phone Number is required.")]
+        [EgyptianPhone(ErrorMessage = "Invalid Egyptian phone number format.")]
+        public string? PhoneNumber { get; set; }
+
+        [EgyptianPhone(ErrorMessage = "Invalid additional phone number format.")]
         public string? AdditionalPhoneNumber { get; set; }
 
     }
