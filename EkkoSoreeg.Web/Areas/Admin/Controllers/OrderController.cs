@@ -153,7 +153,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                         worksheet.Cells[row, 3].Value = header.PhoneNumber;
                         worksheet.Cells[row, 4].Value = header.AdditionalInformation;
                         worksheet.Cells[row, 5].Value = $"{header.City}, {header.Region}, {header.Address}";
-                        worksheet.Cells[row, 8].Value = header.totalPrice;
+                        worksheet.Cells[row, 8].Value = (header.totalPrice + 50);
 
                         var productContent = "";
                         var orderQuantity  = "";
