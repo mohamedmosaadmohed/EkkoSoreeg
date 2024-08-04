@@ -20,7 +20,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
             decimal? maxPrice)
         {
             var pageNumber = page ?? 1;
-            int pageSize = 8;
+            int pageSize = 4;
 
             var products = _unitOfWork.Product.GetAll(IncludeWord: "TbCatagory,ProductImages,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize");
             var categories = _unitOfWork.Catagory.GetAll();

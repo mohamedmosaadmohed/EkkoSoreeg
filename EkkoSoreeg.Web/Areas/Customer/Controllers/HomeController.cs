@@ -23,7 +23,7 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		}
 		public IActionResult Index()
 		{
-			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages");
+			var products = _unitOfWork.Product.GetAll(X => X.SaleNumber > 5 ,IncludeWord: "ProductImages");
 			return View(products);
 		}
 		public IActionResult Details(int Id,int ? page)

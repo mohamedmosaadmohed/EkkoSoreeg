@@ -318,7 +318,6 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
                 foreach (var item in shoppingCartvm.shoppingCarts)
                 {
                     item.Product.Stock -= item.Count;
-                    item.Product.SaleNumber++;
 
                     if (item.Product.OfferPrice != 0)
                         shoppingCartvm.OrderHeader.totalPrice += (item.Count * item.Product.OfferPrice);

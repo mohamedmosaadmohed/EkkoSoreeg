@@ -1,6 +1,7 @@
 ﻿@model ShoppingCart
-@using X.PagedList.Mvc.Core
-@using X.PagedList
+@{
+	int productCount = Model.RelatedProducts.Count();
+}
 <!-- breadcrumb -->
 <div class="container mt-5">
 	<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
@@ -19,7 +20,6 @@
 		</span>
 	</div>
 </div>
-
 <partial name="_Toaster" />
 <!-- Product Detail -->
 <section class="sec-product-detail bg0 p-t-65 p-b-60">
@@ -114,7 +114,7 @@
 											<i class="fs-16 zmdi zmdi-minus"></i>
 										</div>
 
-									<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product" value="1">
+									  <input class="mtext-104 cl3 txt-center num-product" type="number" id="num" name="num-product" value="1" min="1">
 
 										<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
 											<i class="fs-16 zmdi zmdi-plus"></i>
@@ -140,6 +140,7 @@
 						<input type="hidden" id="ProductCount" name="Count" />
 						<input type="hidden" id="SelectedSize" name="Size" />
 						<input type="hidden" id="SelectedColor" name="Color" />
+						<input type="hidden" id="ProductStock" value="@Model.Product.Stock" />
 					</form>
 						<!--  -->
 						<div class="flex-w flex-m p-l-100 p-t-40 respon7">
@@ -194,7 +195,14 @@
 						<div class="tab-pane fade" id="information" role="tabpanel">
 							<div class="row">
 								<div class="col-sm-10 col-md-8 col-lg-6 m-lr-auto">
-									<ul class="p-lr-28 p-lr-15-sm">
+									@if (Model.Product.TbCatagory.Name == "T-Shirt")
+									{
+										<img src="~/Customer/images/SizeChart.jpeg" alt="Size Charts" class="img-fluid"
+											 width="400" height="300" />
+									}
+									else
+									{
+																			<ul class="p-lr-28 p-lr-15-sm">
 										<li class="flex-w flex-t p-b-7">
 											<span class="stext-102 cl3 size-205">
 												Weight
@@ -263,6 +271,7 @@
 											</span>
 										</li>
 									</ul>
+									}
 								</div>
 							</div>
 						</div>
@@ -275,7 +284,7 @@
 										<!-- Review -->
 										<div class="flex-w flex-t p-b-68">
 											<div class="wrap-pic-s size-109 bor0 of-hidden m-r-18 m-t-6">
-												<img src="~/Customer/images/avatar-01.jpg" alt="AVATAR">
+											<img src="~/Dashboard/Images/default-avatar.png" alt="AVATAR">
 											</div>
 
 											<div class="size-207">
@@ -356,7 +365,7 @@
 
 		<div class="bg6 flex-c-m flex-w size-302 m-t-73 p-tb-15">
 			<span class="stext-107 cl6 p-lr-25">
-				SKU: JAK-01
+				Category
 			</span>
 
 			<span class="stext-107 cl6 p-lr-25">
@@ -364,9 +373,6 @@
 			</span>
 		</div>
 </section>
-
-
-
 <!-- Related Products -->
 <section class="bg0 p-t-23 p-b-140">
 	<div class="container">
@@ -376,13 +382,13 @@
 			</h3>
 		</div>
 		<hr />
-		<div class="row isotope-grid">
-			@foreach (var item in Model.RelatedProducts)
-			{
-				<a href="/Customer/Home/Details/@item.Id">
+		<div class="wrap-slick1">
+			<div class="product-slider" data-product-count="@productCount">
+				@foreach (var item in Model.RelatedProducts)
+				{
 					<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
 						<a href="/Customer/Home/Details/@item.Id">
-						<div class="block2">
+						   <div class="block2">
 							<div class="block2-pic hov-img0 position-relative">
 								@if (item.Stock == 0)
 								{
@@ -395,8 +401,8 @@
 									<div class="badge offer">Offer</div>
 								}
 								<img src="~/@item.ProductImages.First().ImagePath" alt="IMG-PRODUCT" class="product-image">
-								<a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-									Quick View
+								<a href="/Customer/Home/Details/@item.Id" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+									View Details
 								</a>
 							</div>
 							<div class="block2-txt flex-w flex-t p-t-14">
@@ -427,25 +433,64 @@
 								</div>
 							</div>
 						</div>
+						</a>
 					</div>
-				</a>
-			}
-		</div>
-
-
-
-		<!-- Load more -->
-		<div class="flex-c-m flex-w w-full p-t-45">
-			@Html.PagedListPager((IPagedList)Model.RelatedProducts, page => Url.Action("Index", new { page = page }),
-							new PagedListRenderOptions
-			{
-				LiElementClasses = new string[] { "page-item" },
-				PageClasses = new string[] { "page-link" }
-			})
+				}
+			</div>
+			<!-- Custom arrows -->
+			<div class="custom-slick-prev">&#9664;</div>
+			<div class="custom-slick-next">&#9654;</div>
 		</div>
 	</div>
 </section>
 <style>
+	/* Style for Slick Slider Arrows */
+	.custom-slick-prev, .custom-slick-next {
+		position: absolute;
+		top: 40%;
+		transform: translateY(-60%);
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		color: rgba(255,255,255,0.3);
+		font-size: 30px;
+		line-height: 1.3;
+		text-align: center;
+		opacity: 0.7;
+		transition: opacity 0.3s;
+		cursor: pointer;
+		z-index: 1000;
+	}
+
+		.custom-slick-prev:hover, .custom-slick-next:hover {
+			color: #7280e0;
+		}
+
+	.custom-slick-prev {
+		left: -20px;
+	}
+
+	.custom-slick-next {
+		right: -20px;
+	}
+
+	/* Style for Slick Slider Dots */
+	.slick-dots {
+		bottom: 10px;
+	}
+
+		.slick-dots li button:before {
+			font-size: 12px;
+			color: #333;
+			opacity: 0.75;
+			transition: opacity 0.3s;
+		}
+
+		.slick-dots li.slick-active button:before {
+			color: #000;
+			opacity: 1;
+		}
+
 	.block2 {
 		height: 100%;
 	}
@@ -504,7 +549,6 @@
 		font-weight: bold;
 		border-radius: 5px;
 	}
-
 </style>
 
 @section Scripts {
@@ -520,8 +564,9 @@
 			const selectedSizeText = sizeSelect.options[sizeSelect.selectedIndex].text;
 			const selectedColorText = colorSelect.options[colorSelect.selectedIndex].text;
 
-			// Get the product count
+			// Get the product count and stock
 			const productCount = document.querySelector('.num-product').value;
+			const productStock = document.getElementById('ProductStock').value;
 
 			// Validation checks
 			if (sizeSelect.value === "") {
@@ -542,6 +587,24 @@
 				return;
 			}
 
+			if (productCount < 1) {
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: 'Product Count Cannot be Zero.'
+				});
+				return;
+			}
+
+			if (productCount > productStock) {
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: `Only ${productStock} Items are Available in Stock.`
+				});
+				return;
+			}
+
 			// Set hidden input values to the selected option text
 			document.getElementById('SelectedSize').value = selectedSizeText;
 			document.getElementById('SelectedColor').value = selectedColorText;
@@ -550,7 +613,55 @@
 			// Submit the form
 			document.getElementById('Details').submit();
 		}
+	</script>
+	<script>
+		$(document).ready(function () {
+			var productCount = $('.product-slider').data('product-count');
+			var slidesToShow = 4; // Default value
+
+			if (productCount === 3) {
+				slidesToShow = 3;
+			} else if (productCount === 2) {
+				slidesToShow = 2;
+			} else if (productCount === 1) {
+				slidesToShow = 1;
+			}
+
+			$('.product-slider').slick({
+				slidesToShow: slidesToShow,
+				slidesToScroll: 1,
+				autoplay: true,
+				autoplaySpeed: 2000,
+				dots: false,
+				arrows: true,
+				prevArrow: $('.custom-slick-prev'),
+				nextArrow: $('.custom-slick-next'),
+				responsive: [
+					{
+						breakpoint: 1024,
+						settings: {
+							slidesToShow: Math.min(slidesToShow, 3),
+							slidesToScroll: 1
+						}
+					},
+					{
+						breakpoint: 768,
+						settings: {
+							slidesToShow: Math.min(slidesToShow, 2),
+							slidesToScroll: 1
+						}
+					},
+					{
+						breakpoint: 480,
+						settings: {
+							slidesToShow: 1,
+							slidesToScroll: 1
+						}
+					}
+				]
+			});
+		});
+
 
 	</script>
-
 }

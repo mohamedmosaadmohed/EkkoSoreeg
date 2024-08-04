@@ -126,8 +126,8 @@
         <div class="row isotope-grid">
             @foreach (var item in Model.Products)
             {
-                <a href="/Customer/Home/Details/@item.Id">
-                    <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
+                <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
+                    <a href="/Customer/Home/Details/@item.Id">
                         <div class="block2">
                             <div class="block2-pic hov-img0 position-relative">
                                 @if (item.Stock == 0)
@@ -141,8 +141,8 @@
                                     <div class="badge offer">Offer</div>
                                 }
                                 <img src="~/@item.ProductImages.First().ImagePath" alt="IMG-PRODUCT" class="product-image">
-                                <a href="#" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-                                    Quick View
+                                <a href="/Customer/Home/Details/@item.Id" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+                                    View Details
                                 </a>
                             </div>
                             <div class="block2-txt flex-w flex-t p-t-14">
@@ -173,8 +173,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             }
         </div>
 

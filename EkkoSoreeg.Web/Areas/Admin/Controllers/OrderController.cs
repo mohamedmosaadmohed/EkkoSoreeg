@@ -4,6 +4,7 @@ using EkkoSoreeg.Entities.ViewModels;
 using EkkoSoreeg.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using OfficeOpenXml;
 using System.Drawing;
@@ -99,8 +100,13 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         public IActionResult CancelOrder()
         {
             var orderFromDB = _unitOfWork.OrderHeader.GetFirstorDefault(X => X.Id == OrderVM.orderHeader.Id);
-
-            orderFromDB.orderStatus = SD.Cancelled;
+			foreach(var item in OrderVM.orderDetails)
+            {
+				var product = _unitOfWork.Product.GetFirstorDefault(p => p.Id == item.productId);
+                product.Stock = product.Stock + item.Count;
+			}
+			
+			orderFromDB.orderStatus = SD.Cancelled;
 
             _unitOfWork.OrderHeader.Update(orderFromDB);
             _unitOfWork.Complete();
@@ -114,8 +120,13 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
             var orderFromDB = _unitOfWork.OrderHeader.GetFirstorDefault(X => X.Id == OrderVM.orderHeader.Id);
 
             orderFromDB.orderStatus = SD.Closed;
+			foreach (var item in OrderVM.orderDetails)
+			{
+				var product = _unitOfWork.Product.GetFirstorDefault(p => p.Id == item.productId);
+				product.SaleNumber = product.SaleNumber ++;
+			}
 
-            _unitOfWork.OrderHeader.Update(orderFromDB);
+			_unitOfWork.OrderHeader.Update(orderFromDB);
             _unitOfWork.Complete();
             TempData["Update"] = "Order Has been Closed";
             return RedirectToAction("Details", "Order", new { orderid = OrderVM.orderHeader.Id });
