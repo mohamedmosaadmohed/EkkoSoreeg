@@ -214,6 +214,11 @@
 			</div>
 		</div>
 	</header>
+	<!--Loader-->
+	<!-- Loader -->
+	<div id="loader" class="loader">
+		<div class="spinner"></div>
+	</div>
 	<!-- Cart -->
 	@await Component.InvokeAsync("Cart")
 		@RenderBody()
@@ -336,8 +341,6 @@
 			</div>
 		</div>
 	</footer>
-
-
 	<!-- Back to top -->
 	<div class="btn-back-to-top" id="myBtn">
 		<span class="symbol-btn-back-to-top">
@@ -353,6 +356,13 @@
 	<script src="~/Customer/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<!--===============================================================================================-->
 	<script src="~/Customer/vendor/select2/select2.min.js"></script>
+	<script>
+		window.onload = function () {
+			setTimeout(function () {
+				document.getElementById("loader").style.display = "none";
+			}, 1000);
+		};
+	</script>
 	<script>
 		$(".js-select2").each(function(){
 			$(this).select2({

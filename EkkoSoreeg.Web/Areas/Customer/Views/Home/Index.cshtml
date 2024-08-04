@@ -1,6 +1,4 @@
 ﻿@model IEnumerable<Product>
-@using X.PagedList.Mvc.Core
-@using X.PagedList
 <!-- Slider -->
 
 <partial name="_Toaster"/>
@@ -30,7 +28,6 @@
 					</div>
 				</div>
 			</div>
-
 			<div class="item-slick1" style="background-image: url(/Customer/images/slide-03.jpg);">
 				<div class="container h-full">
 					<div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
@@ -54,7 +51,6 @@
 					</div>
 				</div>
 			</div>
-
 			<div class="item-slick1" style="background-image: url(/Customer/images/slide-06.jpg);">
 				<div class="container h-full">
 					<div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
@@ -182,7 +178,7 @@
 		</div>
 	</div>
 </div>
-<!-- Product -->
+<!-- Product Slider -->
 <section class="bg0 p-t-23 p-b-140">
 	<div class="container">
 		<div class="p-b-10">
@@ -191,10 +187,10 @@
 			</h3>
 		</div>
 		<hr />
-		<div class="row isotope-grid">
-			@foreach (var item in Model)
-			{
-				<a href="/Customer/Home/Details/@item.Id">
+		<div class="wrap-slick1">
+			<div class="product-slider">
+				@foreach (var item in Model)
+				{
 					<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
 						<div class="block2">
 							<div class="block2-pic hov-img0 position-relative">
@@ -212,7 +208,6 @@
 								<a href="/Customer/Order/CancelOrder/@item.Id" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
 									View Details
 								</a>
-
 							</div>
 							<div class="block2-txt flex-w flex-t p-t-14">
 								<div class="block2-txt-child1 flex-col-l">
@@ -237,32 +232,71 @@
 								</div>
 								<div class="block2-txt-child2 flex-r p-t-3">
 									<a href="/Customer/Home/AddWishList/@item.Id" class="pos-relative">
-										@await Component.InvokeAsync("Love", new { wishid = @item.Id})
+										@await Component.InvokeAsync("Love", new { wishid = @item.Id })
 									</a>
 								</div>
 							</div>
 						</div>
 					</div>
-				</a>
-				
-			}
-		</div>
-
-
-
-		<!-- Load more -->
-		<div class="flex-c-m flex-w w-full p-t-45">
-			@Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page = page }),
-			new PagedListRenderOptions
-			{
-				LiElementClasses = new string[]{"page-item" },
-				PageClasses = new string[] {"page-link" }
-			})
+				}
+			</div>
+			<!-- Custom arrows -->
+			<div class="custom-slick-prev">&#9664;</div>
+			<div class="custom-slick-next">&#9654;</div>
 		</div>
 	</div>
 </section>
-@* @await Component.InvokeAsync("Modal", new { Id = 2}) *@
+
+
+
 <style>
+	/* Style for Slick Slider Arrows */
+	.custom-slick-prev, .custom-slick-next {
+		position: absolute;
+		top: 40%;
+		transform: translateY(-60%);
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		color: rgba(255,255,255,0.3);
+		font-size: 30px;
+		line-height: 1.3;
+		text-align: center;
+		opacity: 0.7;
+		transition: opacity 0.3s;
+		cursor: pointer;
+		z-index: 1000;
+	}
+
+		.custom-slick-prev:hover, .custom-slick-next:hover {
+			color: #7280e0;
+		}
+
+	.custom-slick-prev {
+		left: -30px;
+	}
+
+	.custom-slick-next {
+		right: -30px;
+	}
+
+	/* Style for Slick Slider Dots */
+	.slick-dots {
+		bottom: 10px;
+	}
+
+		.slick-dots li button:before {
+			font-size: 12px;
+			color: #333;
+			opacity: 0.75;
+			transition: opacity 0.3s;
+		}
+
+		.slick-dots li.slick-active button:before {
+			color: #000;
+			opacity: 1;
+		}
+
 	.block2 {
 		height: 100%;
 	}
@@ -321,5 +355,43 @@
 		font-weight: bold;
 		border-radius: 5px;
 	}
-
 </style>
+<script>
+	$(document).ready(function () {
+		$('.product-slider').slick({
+			slidesToShow: 4,
+			slidesToScroll: 1,
+			autoplay: true,
+			autoplaySpeed: 2000,
+			dots: false,
+			arrows: true,
+			prevArrow: $('.custom-slick-prev'),
+			nextArrow: $('.custom-slick-next'),
+			responsive: [
+				{
+					breakpoint: 1024,
+					settings: {
+						slidesToShow: 3,
+						slidesToScroll: 1
+					}
+				},
+				{
+					breakpoint: 768,
+					settings: {
+						slidesToShow: 2,
+						slidesToScroll: 1
+					}
+				},
+				{
+					breakpoint: 480,
+					settings: {
+						slidesToShow: 1,
+						slidesToScroll: 1
+					}
+				}
+			]
+		});
+	});
+
+</script>
+

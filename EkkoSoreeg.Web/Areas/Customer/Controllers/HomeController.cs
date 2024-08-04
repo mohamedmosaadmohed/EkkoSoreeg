@@ -21,11 +21,9 @@ namespace EkkoSoreeg.Areas.Customer.Controllers
 		{
 			_unitOfWork = unitOfWork;
 		}
-		public IActionResult Index(int ? page)
+		public IActionResult Index()
 		{
-			var pageNumber = page ?? 1;
-			int pageSize = 4;
-			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages").ToPagedList(pageNumber,pageSize);
+			var products = _unitOfWork.Product.GetAll(IncludeWord: "ProductImages");
 			return View(products);
 		}
 		public IActionResult Details(int Id,int ? page)

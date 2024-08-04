@@ -15,10 +15,12 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index(int? page, string searchQuery, string category, string sortBy, string color, decimal? minPrice, decimal? maxPrice)
+        public IActionResult Index(int? page, string searchQuery, 
+            string category, string sortBy, string color, decimal? minPrice, 
+            decimal? maxPrice)
         {
             var pageNumber = page ?? 1;
-            int pageSize = 4;
+            int pageSize = 8;
 
             var products = _unitOfWork.Product.GetAll(IncludeWord: "TbCatagory,ProductImages,ProductColorMappings.ProductColor,ProductSizeMappings.ProductSize");
             var categories = _unitOfWork.Catagory.GetAll();
