@@ -145,7 +145,7 @@
                         {
                             <input type="submit" class="btn btn-secondary m-1" onclick="return CheckData()" asp-action="StartShipping" name="action" value="StartShipping" />
                         }
-                        @if (Model.orderHeader.orderStatus != SD.Cancelled && Model.orderHeader.orderStatus != SD.Refund)
+                        @if (Model.orderHeader.orderStatus != SD.Cancelled && Model.orderHeader.orderStatus != SD.Closed)
                         {
                             <button type="submit" class="btn btn-danger m-1" asp-action="CancelOrder" name="action" value="CancelOrder">Cancel Order</button>
                         }

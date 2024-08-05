@@ -118,13 +118,14 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         public IActionResult CloseOrder()
         {
             var orderFromDB = _unitOfWork.OrderHeader.GetFirstorDefault(X => X.Id == OrderVM.orderHeader.Id);
-
+           
             orderFromDB.orderStatus = SD.Closed;
 			foreach (var item in OrderVM.orderDetails)
 			{
-				var product = _unitOfWork.Product.GetFirstorDefault(p => p.Id == item.productId);
-				product.SaleNumber = product.SaleNumber ++;
-			}
+                var detailsfromDb = _unitOfWork.OrderDetails.GetFirstorDefault(p => p.Id == item.Id);
+                var product = _unitOfWork.Product.GetFirstorDefault(p => p.Id == detailsfromDb.productId);
+                product.SaleNumber = (product.SaleNumber) + 1;
+            }
 
 			_unitOfWork.OrderHeader.Update(orderFromDB);
             _unitOfWork.Complete();

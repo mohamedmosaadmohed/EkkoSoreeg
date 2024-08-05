@@ -27,17 +27,18 @@
                             @foreach(var item  in Model.OrderDetails)
                             {
                                 <div class="order-summary">
-                                    <div class="product-details">
-                                        <div class="product-image">
+                                    <div class="product-details row">
+                                        <div class="product-image col-12 col-md-2">
                                             <img src="~/@item.product.ProductImages.First().ImagePath" alt="Product Image" class="img-fluid" />
                                         </div>
-                                        <div class="product-info pl-2">
+                                        <div class="product-info col-12 col-md-10 pl-md-2 mt-2 mt-md-0">
                                             <h5 class="product-name">@item.product.Name</h5>
-                                             <p class="product-price">@item.price EGP</p>
+                                            <p class="product-price">@item.price EGP</p>
                                             <p class="product-quantity">Count: @item.Count</p>
                                         </div>
                                     </div>
                                 </div>
+
                             }
                         </div>
                         <hr />

@@ -29,10 +29,15 @@ namespace EkkoSoreeg.Web.Pages.Orders
 		public IActionResult OnPostCancelOrder(int? id)
 		{
 			var orderFromDB = _unitOfWork.OrderHeader.GetFirstorDefault(x => x.Id == id);
-
+            var detailOrder = _unitOfWork.OrderDetails.GetAll(x => x.OrderHeaderId == id);
 			if (orderFromDB != null)
 			{
-				orderFromDB.orderStatus = SD.Cancelled;
+                foreach (var item in detailOrder)
+                {
+                    var product = _unitOfWork.Product.GetFirstorDefault(p => p.Id == item.productId);
+                    product.Stock = product.Stock + item.Count;
+                }
+                orderFromDB.orderStatus = SD.Cancelled;
 
 				_unitOfWork.OrderHeader.Update(orderFromDB);
 				_unitOfWork.Complete();
