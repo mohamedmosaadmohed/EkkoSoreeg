@@ -31,8 +31,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                 .Select(user => new UserWithRolesViewModel
                 {
                     Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
+                    Name = user.Name,
                     Email = user.Email,
                     LockoutEnd = user.LockoutEnd,
                     Roles = _context.UserRoles

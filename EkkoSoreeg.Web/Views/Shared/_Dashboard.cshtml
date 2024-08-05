@@ -2,7 +2,7 @@
 @inject UserManager<ApplicationUser> UserManager
 @{
     var user = await UserManager.GetUserAsync(User);
-    var FullName = user?.FirstName + ' ' + user?.LastName;
+    var FullName = user?.Name;
     var Email = user?.Email;
     var roles = await UserManager.GetRolesAsync(user);
 }

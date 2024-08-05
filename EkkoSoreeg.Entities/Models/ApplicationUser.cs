@@ -12,10 +12,7 @@ namespace EkkoSoreeg.Entities.Models
     {
         [Required]
         [MaxLength(450)]
-        public string FirstName { get; set; }
-        [Required]
-        [MaxLength(450)]
-        public string LastName { get; set; }
+        public string Name { get; set; }
         [MaxLength(450)]
         public string Address { get; set; }
         [MaxLength(450)]

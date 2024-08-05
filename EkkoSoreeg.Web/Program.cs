@@ -13,6 +13,7 @@ using System.Configuration;
 using EkkoSoreeg.Web.DataSeed;
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using EkkoSoreeg.Utilities.SMS;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,7 @@ builder.Services.AddTransient<IEmailSender>(provider => new EmailSender(
     ));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<CartService>();
+builder.Services.AddHttpClient<ISmsService, SmsService>();
 // Set the EPPlus license context to NonCommercial
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 

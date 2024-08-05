@@ -49,8 +49,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
         public IActionResult UpdateOrderDetails()
         {
             var orderFromDB = _unitOfWork.OrderHeader.GetFirstorDefault(X => X.Id == OrderVM.orderHeader.Id);
-            orderFromDB.FirstName = OrderVM.orderHeader.FirstName;
-            orderFromDB.LastName = OrderVM.orderHeader.LastName;
+            orderFromDB.Name = OrderVM.orderHeader.Name;
             orderFromDB.Address = OrderVM.orderHeader.Address;
             orderFromDB.City = OrderVM.orderHeader.City;
             orderFromDB.Region = OrderVM.orderHeader.Region;
@@ -161,7 +160,7 @@ namespace EkkoSoreeg.Areas.Admin.Controllers
                         var orderDetails = _unitOfWork.OrderDetails.GetAll(
                             x => x.OrderHeaderId == header.Id, IncludeWord: "product");
                         worksheet.Cells[row, 1].Value = serialNumber;
-                        worksheet.Cells[row, 2].Value = $"{header.applicationUser.FirstName}, {header.applicationUser.LastName}";
+                        worksheet.Cells[row, 2].Value = $"{header.applicationUser.Name}";
                         worksheet.Cells[row, 3].Value = header.PhoneNumber;
                         worksheet.Cells[row, 4].Value = header.AdditionalInformation;
                         worksheet.Cells[row, 5].Value = $"{header.City}, {header.Region}, {header.Address}";

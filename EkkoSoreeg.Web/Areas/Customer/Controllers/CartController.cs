@@ -254,8 +254,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
                            _unitOfWork.ShoppingCart.GetAll(x => x.ApplicationUserId == claim.Value).ToList().Count());
                 }
 
-				shoppingCartVM.OrderHeader.FirstName = shoppingCartVM.OrderHeader.applicationUser.FirstName;
-				shoppingCartVM.OrderHeader.LastName = shoppingCartVM.OrderHeader.applicationUser.LastName;
+				shoppingCartVM.OrderHeader.Name = shoppingCartVM.OrderHeader.applicationUser.Name;
 				shoppingCartVM.OrderHeader.Email = shoppingCartVM.OrderHeader.applicationUser.Email;
 				shoppingCartVM.OrderHeader.PhoneNumber = shoppingCartVM.OrderHeader.applicationUser.PhoneNumber;
 				shoppingCartVM.OrderHeader.AdditionalPhoneNumber = shoppingCartVM.OrderHeader.applicationUser.AdditionalPhoneNumber;
@@ -307,8 +306,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
 
                 // Update the user with the data from shoppingCartvm
                 shoppingCartvm.OrderHeader.Email = applicationUser.Email;
-                applicationUser.FirstName = shoppingCartvm.OrderHeader.FirstName;
-                applicationUser.LastName = shoppingCartvm.OrderHeader.LastName;
+                applicationUser.Name = shoppingCartvm.OrderHeader.Name;
                 applicationUser.PhoneNumber = shoppingCartvm.OrderHeader.PhoneNumber;
                 applicationUser.AdditionalPhoneNumber = shoppingCartvm.OrderHeader.AdditionalPhoneNumber;
                 applicationUser.Address = shoppingCartvm.OrderHeader.Address;
@@ -357,8 +355,7 @@ namespace EkkoSoreeg.Web.Areas.Customer.Controllers
             {
                 applicationUser = _unitOfWork.ApplicationUser.GetFirstorDefault(x => x.Id == claim.Value)
             };
-            shoppingCartvm.OrderHeader.FirstName = shoppingCartvm.OrderHeader.applicationUser.FirstName;
-            shoppingCartvm.OrderHeader.LastName = shoppingCartvm.OrderHeader.applicationUser.LastName;
+            shoppingCartvm.OrderHeader.Name = shoppingCartvm.OrderHeader.applicationUser.Name;
             shoppingCartvm.OrderHeader.Email = shoppingCartvm.OrderHeader.applicationUser.Email;
             shoppingCartvm.OrderHeader.PhoneNumber = shoppingCartvm.OrderHeader.applicationUser.PhoneNumber;
             shoppingCartvm.OrderHeader.AdditionalPhoneNumber = shoppingCartvm.OrderHeader.applicationUser.AdditionalPhoneNumber;

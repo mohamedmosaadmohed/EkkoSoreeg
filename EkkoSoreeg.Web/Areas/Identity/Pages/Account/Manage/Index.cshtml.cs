@@ -35,8 +35,7 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
+            public string Name { get; set; }
             public string Address { get; set; }
             public string Region { get; set; }
             public string City { get; set; }
@@ -52,8 +51,7 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
+                Name = user.Name,
                 Address = user.Address,
                 Region = user.Region,
                 City = user.City,
@@ -75,19 +73,13 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            var firstName = user.FirstName;
-            var lastName = user.LastName;
+            var Name = user.Name;
             var address = user.Address;
             var city = user.City;
             var region = user.Region;
-            if (Input.FirstName != firstName)
+            if (Input.Name != Name)
             {
-                user.FirstName = Input.FirstName;
-                await _userManager.UpdateAsync(user);
-            }
-            if (Input.LastName != lastName)
-            {
-                user.LastName = Input.LastName;
+                user.Name = Input.Name;
                 await _userManager.UpdateAsync(user);
             }
             if (Input.Address != address)
