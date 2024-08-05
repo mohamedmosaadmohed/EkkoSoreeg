@@ -20,21 +20,14 @@
             <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="firstname">First Name</label>
-                        <input type="text" class="form-control" id="firstname" asp-for="OrderHeader.Name" />
+                        <label for="firstname">Name</label>
+                        <input type="text" class="form-control" id="name" asp-for="OrderHeader.Name" />
                         <span asp-validation-for="OrderHeader.Name" class="text-danger"></span>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="phonenumber">Phone Number</label>
                         <input type="tel" class="form-control" id="phonenumber" asp-for="OrderHeader.PhoneNumber" />
                         <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="additionalphonenumber">Additional Phone</label>
-                        <input type="tel" class="form-control" id="additionalphonenumber" asp-for="OrderHeader.AdditionalPhoneNumber" />
-                        <span asp-validation-for="OrderHeader.AdditionalPhoneNumber" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="row">
@@ -50,25 +43,30 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="additionalinformation">Additional Information (Notes)</label>
-                        <input type="text" class="form-control" id="additionalinformation" asp-for="OrderHeader.AdditionalInformation" />
-                        <span asp-validation-for="OrderHeader.AdditionalInformation" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6 mb-3">
                         <label for="region">Region</label>
                         <select class="form-control" id="region" asp-for="OrderHeader.Region">
                             <option value="">Select Region</option>
                         </select>
                         <span asp-validation-for="OrderHeader.Region" class="text-danger"></span>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="city">City</label>
                         <select class="form-control" id="city" asp-for="OrderHeader.City">
                             <option value="">Select City</option>
                         </select>
                         <span asp-validation-for="OrderHeader.City" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="additionalinformation">Additional Information (Notes)</label>
+                        <input type="text" class="form-control" id="additionalinformation" asp-for="OrderHeader.AdditionalInformation" />
+                        <span asp-validation-for="OrderHeader.AdditionalInformation" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="additionalphonenumber">Additional Phone</label>
+                        <input type="tel" class="form-control" id="additionalphonenumber" asp-for="OrderHeader.AdditionalPhoneNumber" />
+                        <span asp-validation-for="OrderHeader.AdditionalPhoneNumber" class="text-danger"></span>
                     </div>
                 </div>
             </div>

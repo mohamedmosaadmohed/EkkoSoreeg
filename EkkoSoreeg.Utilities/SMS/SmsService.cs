@@ -17,12 +17,12 @@ namespace EkkoSoreeg.Utilities.SMS
             _client = client;
         }
 
-        public async Task SendOTPAsync(string phoneNumber, string otp)
+        public async Task SendOTPAsync(string toPhone, string otp)
         {
             try
             {
                 string url = $"{SD.Url}?environment=2&username={SD.UserName}&password={SD.Password}&sender={SD.SenderIDs}" +
-                             $"&mobile={phoneNumber}&template={SD.Templete}&otp={otp}";
+                             $"&mobile={toPhone}&template={SD.Templete}&otp={otp}";
 
                 HttpResponseMessage response = await _client.PostAsync(url, null);
                 response.EnsureSuccessStatusCode();
