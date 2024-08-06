@@ -30,8 +30,8 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account.Manage
 
         public void OnGet()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var claim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
             OrderHeaders = _unitOfWork.OrderHeader.GetAll(o => o.ApplicationUserId == claim.Value);
 

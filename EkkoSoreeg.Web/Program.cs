@@ -14,6 +14,7 @@ using EkkoSoreeg.Web.DataSeed;
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using EkkoSoreeg.Utilities.SMS;
+using EkkoSoreeg.Utilities.OTP;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +39,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders()
 .AddDefaultUI();
-
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IOtpService, OtpService>();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender>(provider => new EmailSender(
         email: "mohamedmohenaish343@gmail.com",

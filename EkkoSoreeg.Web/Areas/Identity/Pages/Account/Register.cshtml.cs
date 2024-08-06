@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EkkoSoreeg.Entities.Models;
 using EkkoSoreeg.Utilities;
+using EkkoSoreeg.Utilities.OTP;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +29,7 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IOtpService _otpService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -35,7 +37,7 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,IOtpService otpService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +46,7 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _otpService = otpService;
         }
         [BindProperty]
         public InputModel Input { get; set; }
@@ -64,12 +67,6 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
-
-
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -82,19 +79,21 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 user.Name = Input.Name;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+                    // Assign role to the user
                     string role = HttpContext.Request.Form["Rolebtn"].ToString();
                     if (string.IsNullOrEmpty(role))
                     {
@@ -103,40 +102,37 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
                     else
                     {
                         await _userManager.AddToRoleAsync(user, role);
-                        // Generate email confirmation token and confirm email
-                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        await _userManager.ConfirmEmailAsync(user, token);
-                        return RedirectToAction("Index", "Users", new { area = "Admin" });
                     }
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    // Generate OTP
+                    var otp = GenerateOTP();
+                    // Store OTP with expiration time
+                    _otpService.StoreOTP(user.Email, otp, TimeSpan.FromMinutes(5));
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+                    // Send OTP via Email
+                    await _emailSender.SendEmailAsync(Input.Email, "OTP",
+                        $"<h1>{otp}</h1>");
+
+                    // Redirect to OTP confirmation page
+                    return RedirectToPage("ConfirmOTP", new { email = Input.Email, returnUrl = returnUrl });
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+
             return Page();
         }
+
+        // Method to generate OTP
+        private string GenerateOTP()
+        {
+            Random random = new Random();
+            return random.Next(1000, 9999).ToString();
+        }
+
 
         private ApplicationUser CreateUser()
         {
