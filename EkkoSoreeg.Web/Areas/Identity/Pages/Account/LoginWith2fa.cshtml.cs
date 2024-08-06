@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using EkkoSoreeg.Entities.Models;
 using EkkoSoreeg.Utilities.SMS;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
 {
@@ -17,17 +18,19 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<LoginWith2faModel> _logger;
         private readonly ISmsService _smsService;
+        private readonly IEmailSender _emailSender;
 
         public LoginWith2faModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             ILogger<LoginWith2faModel> logger,
-            ISmsService smsService)
+            ISmsService smsService, IEmailSender emailSender)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
             _smsService = smsService;
+            _emailSender = emailSender;
         }
 
         [BindProperty]
@@ -58,17 +61,13 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
                 throw new InvalidOperationException("Unable to load two-factor authentication user.");
             }
 
-            // Send SMS with 2FA code
-            var twoFactorCode = await _userManager.GenerateTwoFactorTokenAsync(user, "Phone");
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (phoneNumber != null)
+            // Send email with 2FA code
+            var providers = await _userManager.GetValidTwoFactorProvidersAsync(user); //  Check email Confirmation and 2FA
+            if (providers.Any(_ => _ == "Email"))
             {
-                await _smsService.SendOTPAsync(phoneNumber, twoFactorCode);
-                _logger.LogInformation("2FA code sent to user with ID '{UserId}' via SMS.", user.Id);
-            }
-            else
-            {
-                _logger.LogWarning("User with ID '{UserId}' does not have a valid phone number.", user.Id);
+                var token = await _userManager.GenerateTwoFactorTokenAsync(user,"Email");
+                await _emailSender.SendEmailAsync(user.Email, "Verify OTP",
+                    $"<h1>{token}</h1>");
             }
 
             ReturnUrl = returnUrl;
@@ -94,8 +93,8 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
 
             var authenticatorCode = Input.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
 
-            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, rememberMe, Input.RememberMachine);
-
+            //var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, rememberMe, Input.RememberMachine);
+            var result = await _signInManager.TwoFactorSignInAsync("Email", authenticatorCode, rememberMe, Input.RememberMachine);
             var userId = await _userManager.GetUserIdAsync(user);
 
             if (result.Succeeded)

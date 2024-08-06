@@ -3,37 +3,154 @@
 @{
     ViewData["Title"] = "Two-factor authentication";
 }
-
-<h1>@ViewData["Title"]</h1>
-<hr />
-<p>Your login is protected with an authenticator app. Enter your authenticator code below.</p>
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
-            <input asp-for="RememberMe" type="hidden" />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.TwoFactorCode" class="form-control" autocomplete="off" />
-                <label asp-for="Input.TwoFactorCode" class="form-label"></label>
-                <span asp-validation-for="Input.TwoFactorCode" class="text-danger"></span>
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row">
+            <div class="col-md-5 mt-lg-4">
+                <section class="form-section">
+                    <form class="formgh" method="post" asp-route-returnUrl="@Model.ReturnUrl">
+                        <input asp-for="RememberMe" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.TwoFactorCode" class="form-control" autocomplete="off" />
+                            <span asp-validation-for="Input.TwoFactorCode" class="text-danger"></span>
+                        </div>
+                        <div>
+                            <button type="submit" class="w-100 btn btn-lg btn-primary">Verify</button>
+                        </div>
+                    </form>
+                </section>
             </div>
-            <div class="checkbox mb-3">
-                <label asp-for="Input.RememberMachine" class="form-label">
-                    <input asp-for="Input.RememberMachine" />
-                    @Html.DisplayNameFor(m => m.Input.RememberMachine)
-                </label>
+            <div class="col-md-6 d-none d-md-flex align-items-center">
+                <div class="imagediv">
+                    <img class="loginimg" src="~/Customer/images/usermanage.png" alt="Login Illustration" />
+                </div>
             </div>
-            <div>
-                <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-<p>
-    Don't have access to your authenticator device? You can
-    <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">log in with a recovery code</a>.
-</p>
+</section>
+<style>
+    .imagediv {
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
+    .loginimg {
+        height: auto;
+        max-width: 100%;
+        margin: auto;
+    }
+
+    .formgh {
+        background: #fff;
+        padding: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 30px;
+        gap: 20px;
+        position: relative;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.082);
+        border-radius: 15px;
+    }
+
+    .mainHeading {
+        font-size: 1.4em;
+        color: rgb(15, 15, 15);
+        font-weight: 700;
+    }
+
+    .otpSubheading {
+        font-size: 1.2em;
+        color: black;
+        line-height: 17px;
+        text-align: center;
+    }
+
+    .inputContainer {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .otp-input {
+        background-color: rgb(228, 228, 228);
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        border: none;
+        border-radius: 7px;
+        caret-color: rgb(127, 129, 255);
+        color: rgb(44, 44, 44);
+        outline: none;
+        font-weight: 600;
+    }
+
+        .otp-input:focus,
+        .otp-input:valid {
+            background-color: rgba(127, 129, 255, 0.199);
+            transition-duration: .3s;
+        }
+
+    .verifyButton {
+        width: 100%;
+        height: 40px;
+        border: none;
+        background-color: rgb(127, 129, 255);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 10px;
+        transition-duration: .2s;
+    }
+
+        .verifyButton:hover {
+            background-color: rgb(144, 145, 255);
+            transition-duration: .2s;
+        }
+
+    .exitBtn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.171);
+        background-color: rgb(255, 255, 255);
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        border: none;
+        color: black;
+        font-size: 1.12em;
+        cursor: pointer;
+    }
+
+    .resendNote {
+        font-size: 1em;
+        color: black;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .resendBtn {
+        background-color: transparent;
+        border: none;
+        color: rgb(127, 129, 255);
+        cursor: pointer;
+        font-size: 1.12em;
+        font-weight: 700;
+    }
+</style>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
