@@ -10,18 +10,21 @@
             <div class="col-md-5 mt-lg-4">
                 <section class="form-section">
                     <form class="formgh" method="post">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Input.Email" />
                         <input type="hidden" id="combinedOTP" name="Input.OTP" />
-                        <span class="mainHeading">Enter OTP</span>
+                        <span class="mainHeading">Verify Your Email</span>
                         <p class="otpSubheading">We have sent a verification code to your Email</p>
                         <div class="inputContainer">
-                            <input required="required" maxlength="1" type="text" class="otp-input" id="otp-input1" oninput="moveToNext(this, 'otp-input2')">
-                            <input required="required" maxlength="1" type="text" class="otp-input" id="otp-input2" oninput="moveToNext(this, 'otp-input3')">
-                            <input required="required" maxlength="1" type="text" class="otp-input" id="otp-input3" oninput="moveToNext(this, 'otp-input4')">
-                            <input required="required" maxlength="1" type="text" class="otp-input" id="otp-input4" oninput="combineOTP()">
+                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input1" oninput="moveToNext(this, 'otp-input2')">
+                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input2" oninput="moveToNext(this, 'otp-input3')">
+                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input3" oninput="moveToNext(this, 'otp-input4')">
+                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input4" oninput="combineOTP()">
                         </div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert" id="error-summary"></div>
                         <button class="verifyButton" type="submit">Verify</button>
-                        <p class="resendNote">Didn't receive the code? <button class="resendBtn">Resend Code</button></p>
+                        <span id="timer"></span>
+                        <button class="resendBtn" id="resendBtn" onclick="resendOTP(event)">Resend Code</button>
                     </form>
                 </section>
             </div>
@@ -53,11 +56,68 @@
             document.getElementById('combinedOTP').value = combinedOTP;
         }
 
+        function startTimer(duration, display, button) {
+            var timer = duration, minutes, seconds;
+            var interval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = "Resend in " + minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    display.textContent = "";
+                    button.removeAttribute('disabled'); // When Timer is Run
+                }
+            }, 1000);
+        }
+        // for resend OTP
+        function resendOTP(event) {
+            event.preventDefault();
+            document.getElementById('resendBtn').setAttribute('disabled', 'true');
+            document.getElementById('timer').textContent = "Resend in 00:20";
+            startTimer(20, document.getElementById('timer'), document.getElementById('resendBtn'));
+
+            // Clear existing error messages
+            document.getElementById('error-summary').innerHTML = '';
+
+            // AJAX call to resend OTP
+            var email = document.querySelector('input[name="Input.Email"]').value;
+            fetch('/Identity/Account/ConfirmOTP?handler=ResendOTP', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(email)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log("OTP resent");
+                    } else {
+                        console.error("Failed to resend OTP");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        // Start timer when page load
+        document.addEventListener("DOMContentLoaded", function () {
+            if (!sessionStorage.getItem('pageLoaded')) {
+                sessionStorage.setItem('pageLoaded', 'true');
+                startTimer(20, document.getElementById('timer'), document.getElementById('resendBtn'));
+            }
+        });
+
         // Ensure the OTP is combined when the form is submitted
         document.querySelector('.formgh').addEventListener('submit', function () {
             combineOTP();
         });
     </script>
+
 }
 <style>
     .imagediv {
@@ -112,8 +172,8 @@
 
     .otp-input {
         background-color: rgb(228, 228, 228);
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         text-align: center;
         border: none;
         border-radius: 7px;

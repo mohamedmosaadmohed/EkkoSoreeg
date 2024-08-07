@@ -110,8 +110,7 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
                     _otpService.StoreOTP(user.Email, otp, TimeSpan.FromMinutes(5));
 
                     // Send OTP via Email
-                    await _emailSender.SendEmailAsync(Input.Email, "OTP",
-                        $"<h1>{otp}</h1>");
+                    await _emailSender.SendEmailAsync(user.Email, "OTP Verification", $"<h1>{otp}</h1>");
 
                     // Redirect to OTP confirmation page
                     return RedirectToPage("ConfirmOTP", new { email = Input.Email, returnUrl = returnUrl });
@@ -122,7 +121,6 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
             return Page();
         }
 

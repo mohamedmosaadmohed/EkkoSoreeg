@@ -98,5 +98,31 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
 
             return Page();
         }
+
+        public async Task<IActionResult> OnPostResendOTPAsync([FromBody] string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            // Generate a new OTP
+            var otp = GenerateOTP();
+            // Store the OTP with an expiration time
+            _otpService.StoreOTP(user.Email, otp, TimeSpan.FromMinutes(5));
+
+            // Send the OTP via email
+            await _emailSender.SendEmailAsync(user.Email, "OTP Verification", $"<h1>{otp}</h1>");
+
+            return new JsonResult(new { success = true });
+        }
+
+        // Method to generate OTP
+        private string GenerateOTP()
+        {
+            Random random = new Random();
+            return random.Next(1000, 9999).ToString();
+        }
     }
 }
