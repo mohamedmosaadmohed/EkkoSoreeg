@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using EkkoSoreeg.Entities.Models;
+using EkkoSoreeg.Utilities.OTP;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -17,11 +18,14 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IOtpService _otpService;
 
-        public ForgotPasswordModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<ApplicationUser> userManager,
+            IEmailSender emailSender, IOtpService otpService)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _otpService  = otpService;
         }
 
         [BindProperty]
@@ -41,28 +45,30 @@ namespace EkkoSoreeg.Web.Areas.Identity.Pages.Account
                 var user = await _userManager.FindByEmailAsync(Input.Email);
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
-                    // Add a model state error if the email does not exist or is not confirmed
-                    ModelState.AddModelError(string.Empty, "The email address does not exist.");
+                    ModelState.AddModelError(string.Empty, "The email address does not exist or is not confirmed.");
                     return Page();
                 }
 
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ResetPassword",
-                    pageHandler: null,
-                    values: new { area = "Identity", code },
-                    protocol: Request.Scheme);
+                // Generate OTP
+                var otp = GenerateOTP();
+                // Store OTP with expiration time
+                _otpService.StoreOTP(user.Email, otp, TimeSpan.FromMinutes(5));
 
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                // Send OTP via Email
+                await _emailSender.SendEmailAsync(user.Email, "OTP Verification", $"<h1>{otp}</h1>");
 
-                return RedirectToPage("./ForgotPasswordConfirmation");
+                // Redirect to OTP confirmation page
+                return RedirectToPage("ConfirmOTPForgotPassword", new { email = Input.Email });
             }
 
             return Page();
+        }
+
+        // Method to generate OTP
+        private string GenerateOTP()
+        {
+            Random random = new Random();
+            return random.Next(1000, 9999).ToString();
         }
     }
 }

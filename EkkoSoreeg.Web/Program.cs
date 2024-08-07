@@ -40,7 +40,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders()
 .AddDefaultUI();
 builder.Services.AddMemoryCache();
-builder.Services.AddScoped<IOtpService, OtpService>();
+builder.Services.AddTransient<IOtpService, OtpService>();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender>(provider => new EmailSender(
         email: "mohamedmohenaish343@gmail.com",
