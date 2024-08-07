@@ -116,13 +116,11 @@
                         </div>
                         <div>
                             <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                            <button type="button" class="w-100 btn-lg" onclick="redirectToRegister()">Sign Up</button>
                         </div>
                         <div class="mt-3">
                             <p>
                                 <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                            </p>
-                            <p>
-                                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
                             </p>
                         </div>
                     </form>
@@ -139,6 +137,10 @@
 
 
 <script>
+    function redirectToRegister() {
+        // Redirect to the Register page
+        window.location.href = '@Url.Page("./Register", new { returnUrl = Model.ReturnUrl })';
+    }
     document.addEventListener('DOMContentLoaded', (event) => {
         const togglePassword = document.getElementById('toggle-password');
         const passwordField = document.getElementById('password');

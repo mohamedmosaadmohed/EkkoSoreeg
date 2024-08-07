@@ -132,11 +132,7 @@
                     else
                     {
                         <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-                        <div class="mt-3">
-                            <p>
-                                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">You Already Have Account?</a>
-                            </p>
-                        </div>
+                        <button type="button" class="w-100 btn-lg" onclick="redirectToLogin()">Log In</button>
                     }
                 </form>
             </div>
@@ -153,6 +149,10 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        function redirectToLogin() {
+            // Redirect to the Register page
+            window.location.href = '@Url.Page("./Login", new { returnUrl = Model.ReturnUrl })';
+        }
         document.addEventListener('DOMContentLoaded', (event) => {
             const togglePassword = document.getElementById('toggle-password');
             const passwordField = document.getElementById('password');
