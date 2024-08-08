@@ -11,7 +11,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.7" />
-    <PackageReference Include="X.PagedList.Mvc.Core" Version="10.0.3" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="10.1.2" />
   </ItemGroup>
 
 </Project>
