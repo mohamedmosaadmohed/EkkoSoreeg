@@ -43,8 +43,8 @@ builder.Services.AddMemoryCache();
 builder.Services.AddTransient<IOtpService, OtpService>();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IEmailSender>(provider => new EmailSender(
-        email: "mohamedmohenaish343@gmail.com",
-        password: "ibch tlur soud pvmh",
+        email: "ekkostoreeg4@gmail.com",
+        password: "xxnk iyhd qthc woqh",
         host: "smtp.gmail.com",
         ssl: true,
         port: 587,
