@@ -13,13 +13,7 @@ function loaddata() {
         "datatype": "json",
         "columns": [
             { "data": "id" },
-            {
-                "data": null,
-                "render": function (data, type, row) {
-                    return row.firstName + ' ' + row.lastName;
-                },
-                "title": "name"
-            },
+            { "data": "name" },
             { "data": "phoneNumber" },
             { "data": "orderStatus" },
             { "data": "totalPrice" },
