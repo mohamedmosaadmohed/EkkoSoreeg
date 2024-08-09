@@ -50,7 +50,7 @@
 								</div>
 								@if(claim != null)
 								{
-									<a asp-controller="Cart" asp-action="Remove" asp-route-cartid="@item.shoppingId" class="delete">
+									<a asp-area="Customer" asp-controller="Cart" asp-action="Remove" asp-route-cartid="@item.shoppingId" class="delete">
 										<i class="fas fa-times"></i>
 									</a>
 								}

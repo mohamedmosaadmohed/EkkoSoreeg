@@ -16,10 +16,10 @@
                         <span class="mainHeading">Verify Your Email</span>
                         <p class="otpSubheading">We have sent a verification code to your Email</p>
                         <div class="inputContainer">
-                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input1" oninput="moveToNext(this, 'otp-input2')">
-                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input2" oninput="moveToNext(this, 'otp-input3')">
-                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input3" oninput="moveToNext(this, 'otp-input4')">
-                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input4" oninput="combineOTP()">
+                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input1" pattern="[0-9]" oninput="moveToNext(this, 'otp-input2')" onkeypress="return isDigit(event)">
+                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input2" pattern="[0-9]" oninput="moveToNext(this, 'otp-input3')" onkeypress="return isDigit(event)">
+                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input3" pattern="[0-9]" oninput="moveToNext(this, 'otp-input4')" onkeypress="return isDigit(event)">
+                            <input required="required" maxlength="1" autocomplete="off" type="text" class="otp-input" id="otp-input4" pattern="[0-9]" oninput="combineOTP()" onkeypress="return isDigit(event)">
                         </div>
                         <div asp-validation-summary="ModelOnly" class="text-danger" role="alert" id="error-summary"></div>
                         <button class="verifyButton" type="submit">Verify</button>
@@ -40,6 +40,13 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        function isDigit(event) {
+            const charCode = event.which ? event.which : event.keyCode;
+            if (charCode < 48 || charCode > 57) {
+                return false;
+            }
+            return true;
+        }
         function moveToNext(current, nextFieldID) {
             if (current.value.length >= 1) {
                 document.getElementById(nextFieldID).focus();
@@ -78,8 +85,8 @@
         function resendOTP(event) {
             event.preventDefault();
             document.getElementById('resendBtn').setAttribute('disabled', 'true');
-            document.getElementById('timer').textContent = "Resend in 00:20";
-            startTimer(20, document.getElementById('timer'), document.getElementById('resendBtn'));
+            document.getElementById('timer').textContent = "Resend in 00:30";
+            startTimer(30, document.getElementById('timer'), document.getElementById('resendBtn'));
 
             // Clear existing error messages
             document.getElementById('error-summary').innerHTML = '';
@@ -108,7 +115,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             if (!sessionStorage.getItem('pageLoaded')) {
                 sessionStorage.setItem('pageLoaded', 'true');
-                startTimer(20, document.getElementById('timer'), document.getElementById('resendBtn'));
+                startTimer(30, document.getElementById('timer'), document.getElementById('resendBtn'));
             }
         });
 
